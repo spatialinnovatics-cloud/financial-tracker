@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Financial Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Fin Tracker">
+  <!-- iOS icon (you provide this file) -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- jsPDF + AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --page-bg: #ffffff;
+      --text: #111827;
+      --line: #e5e7eb;
+      --accent: #2563eb;
+      --accent-soft: #e7f0ff;
+      --progress: linear-gradient(90deg, #22c55e, #16a34a);
+    }
+    body.dark {
+      --bg: #0d1117;
+      --page-bg: #161b22;
+      --text: #e6edf3;
+      --line: #30363d;
+      --accent-soft: #1f2937;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: system-ui, sans-serif;
+      color: var(--text);
+      transition: background .3s, color .3s;
+    }
+
+    .dark-toggle {
+      position: fixed;
+      right: 16px;
+      top: 16px;
+      background: var(--accent);
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: white;
+      cursor: pointer;
+      z-index: 999;
+      font-size: 13px;
+      border: none;
+    }
+
+    .page {
+      max-width: 1100px;
+      width: 96%;
+      margin: 24px auto;
+      background: var(--page-bg);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: clamp(20px, 4vw, 30px);
+      margin: 0 0 6px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: clamp(12px, 2.4vw, 14px);
+      opacity: .75;
+      margin-bottom: 20px;
+    }
+
+    .salary-section {
+      padding: 14px;
+      background: var(--accent-soft);
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+    .salary-input {
+      padding: 6px 9px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      width: 140px;
+    }
+
+    .top-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .btn {
+      padding: 8px 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn.secondary {
+      background: #4b5563;
+    }
+
+    .month {
+      margin-top: 24px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    .month-header-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+    .month-header-row h2 {
+      margin: 0;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      font-size: clamp(18px, 3vw, 22px);
+    }
+    .month-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .month-controls .btn {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+
+    h3.section-title {
+      margin: 16px 0 8px;
+      font-size: 14px;
+      opacity: .9;
+    }
+
+    .section-actions {
+      margin-bottom: 6px;
+    }
+    .section-actions .btn {
+      font-size: 11px;
+      padding: 5px 9px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      margin-bottom: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 520px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    th {
+      background: var(--accent-soft);
+      font-weight: 600;
+    }
+
+    input[type=number],
+    input[type=text],
+    input[type=date],
+    select {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 4px;
+      padding: 3px 5px;
+      border: 1px solid var(--line);
+      background: var(--page-bg);
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .pay-check {
+      transform: scale(1.1);
+    }
+
+    .delete-row {
+      color: #ef4444;
+      cursor: pointer;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .month-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 10px 0 4px;
+      font-size: 12px;
+    }
+    .month-summary span {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 700px) {
+      .page {
+        padding: 16px;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .table-wrapper {
+        border-radius: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Dark Mode</button>
+
+<div class="page">
+  <h1>Financial Tracker</h1>
+  <p class="subtitle">Bills • BNPL • Finance • Debt • Transactions • CSV • PDF • Offline</p>
+
+  <div class="salary-section">
+    <strong>Monthly Salary (£):</strong>
+    <input type="number" id="salary" class="salary-input" value="0" oninput="saveSalaryAndUpdate()" />
+  </div>
+
+  <div class="top-buttons">
+    <button class="btn" onclick="addMonthPage()">+ Add Month</button>
+    <button class="btn secondary" onclick="exportAllMonthsCSV()">Export All Months CSV</button>
+  </div>
+
+  <div id="months-container"></div>
+</div>
+
+<script>
+/* ============= LOCAL STORAGE HELPERS ============= */
+
+function saveToLocalStorage() {
+  const salary = document.getElementById("salary").value || "0";
+  const monthsHTML = document.getElementById("months-container").innerHTML;
+  localStorage.setItem("ft_salary", salary);
+  localStorage.setItem("ft_months_html", monthsHTML);
+}
+
+function saveSalaryAndUpdate() {
+  localStorage.setItem("ft_salary", document.getElementById("salary").value || "0");
+  updateAllMonths();
+}
+
+function restoreFromLocalStorage() {
+  const salary = localStorage.getItem("ft_salary");
+  const monthsHTML = localStorage.getItem("ft_months_html");
+
+  if (salary !== null) {
+    document.getElementById("salary").value = salary;
+  }
+
+  if (monthsHTML) {
+    document.getElementById("months-container").innerHTML = monthsHTML;
+  }
+
+  // Ensure events work after restore
+  attachGlobalListeners();
+  updateAllMonths();
+}
+
+/* ============= ROW GENERATION ============= */
+
+function generateRow(sectionName) {
+  if (sectionName === "Transactions") {
+    return `
+      <tr>
+        <td><input type="checkbox" class="pay-check" data-amount="0"></td>
+        <td><input type="date"></td>
+        <td>
+          <select>
+            <option value=""></option>
+            <option>Income</option>
+            <option>Expense</option>
+            <option>Transfer</option>
+            <option>Refund</option>
+            <option>Adjustment</option>
+          </select>
+        </td>
+        <td>
+          <select>
+            <option value=""></option>
+            <option>Food</option>
+            <option>Travel</option>
+            <option>Subscriptions</option>
+            <option>Health</option>
+            <option>Shopping</option>
+            <option>Bills</option>
+            <option>Business</option>
+            <option>Savings</option>
+            <option>Debt</option>
+            <option>Other</option>
+          </select>
+        </td>
+        <td><input type="number" step="0.01" value="0" placeholder="+100 or -50"></td>
+        <td><input type="text" placeholder="Description"></td>
+        <td>
+          <select>
+            <option value=""></option>
+            <option>Cash</option>
+            <option>Debit Card</option>
+            <option>Credit Card</option>
+            <option>BNPL</option>
+            <option>Monzo</option>
+            <option>PayPal</option>
+            <option>Bank Transfer</option>
+            <option>Other</option>
+          </select>
+        </td>
+        <td class="delete-row">✖</td>
+      </tr>
+    `;
+  }
+
+  // Bills / BNPL / Finance Plans / Debt
+  return `
+    <tr>
+      <td><input type="checkbox" class="pay-check" data-amount="0"></td>
+      <td><input type="text" placeholder="Payment Type"></td>
+      <td><input type="number" step="0.01" value="0"></td>
+      <td><input type="text" placeholder="Description"></td>
+      <td class="delete-row">✖</td>
+    </tr>
+  `;
+}
+
+/* ============= SECTION + MONTH CREATION ============= */
+
+function createSection(title) {
+  const isTransactions = title === "Transactions";
+  return `
+    <div class="month-section" data-section="${title}">
+      <h3 class="section-title">${title}</h3>
+      <div class="section-actions">
+        <button class="btn secondary" onclick="addRow(this)">+ Add Row</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              ${
+                isTransactions
+                  ? `<th>Pay?</th><th>Date</th><th>Type</th><th>Category</th><th>Amount (£)</th><th>Description</th><th>Method</th><th>Delete</th>`
+                  : `<th>Pay?</th><th>Payment Type</th><th>Amount (£)</th><th>Description</th><th>Delete</th>`
+              }
+            </tr>
+          </thead>
+          <tbody class="payment-rows">
+            ${generateRow(title)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function addMonthPage() {
+  const container = document.getElementById("months-container");
+  const month = document.createElement("div");
+  month.className = "month";
+
+  month.innerHTML = `
+    <div class="month-header-row">
+      <h2 contenteditable="true" oninput="saveToLocalStorage()">New Month</h2>
+      <div class="month-controls">
+        <button class="btn secondary" onclick="importMonthCSV(this)">Import CSV</button>
+        <button class="btn secondary" onclick="exportMonthCSV(this)">Export CSV</button>
+        <button class="btn secondary" onclick="downloadMonthPDF(this)">PDF</button>
+        <button class="btn secondary" onclick="clearMonth(this)">Clear Month</button>
+      </div>
+    </div>
+
+    ${createSection("Bills")}
+    ${createSection("BNPL")}
+    ${createSection("Finance Plans")}
+    ${createSection("Debt")}
+    ${createSection("Transactions")}
+
+    <div class="month-summary">
+      <span><strong>Total Outgoings: £</strong><span class="month-total">0.00</span></span>
+      <span><strong>Paid: £</strong><span class="month-paid">0.00</span></span>
+      <span><strong>Remaining Outgoings: £</strong><span class="month-remaining">0.00</span></span>
+      <span><strong>Net Transactions: £</strong><span class="month-trans">0.00</span></span>
+      <span><strong>Monthly Net Position: £</strong><span class="month-net">0.00</span></span>
+    </div>
+  `;
+
+  container.appendChild(month);
+  saveToLocalStorage();
+  attachGlobalListeners();
+  updateMonthFor(month);
+}
+
+/* ============= ROW OPS ============= */
+
+function addRow(btn) {
+  const section = btn.closest(".month-section");
+  const sectionName = section.dataset.section;
+  const tbody = section.querySelector(".payment-rows");
+  tbody.insertAdjacentHTML("beforeend", generateRow(sectionName));
+  attachGlobalListeners();
+  saveToLocalStorage();
+}
+
+function deleteRowCell(cell) {
+  const row = cell.closest("tr");
+  const month = cell.closest(".month");
+  row.remove();
+  updateMonthFor(month);
+  saveToLocalStorage();
+}
+
+function clearMonth(btn) {
+  const month = btn.closest(".month");
+  month.querySelectorAll(".payment-rows").forEach(tbody => {
+    tbody.innerHTML = "";
+  });
+  updateMonthFor(month);
+  saveToLocalStorage();
+}
+
+/* ============= CALCULATIONS ============= */
+
+function updateMonthFor(month) {
+  if (!month) return;
+
+  const salary = parseFloat(document.getElementById("salary").value || 0);
+  const payChecks = month.querySelectorAll(".month-section:not([data-section='Transactions']) .pay-check");
+
+  let totalOutgoings = 0;
+  let paidOutgoings = 0;
+
+  payChecks.forEach(cb => {
+    const row = cb.closest("tr");
+    const amountInput = row.querySelector("td:nth-child(3) input[type='number']");
+    const amount = parseFloat(amountInput?.value || 0);
+    cb.dataset.amount = isNaN(amount) ? 0 : amount;
+    totalOutgoings += amount;
+    if (cb.checked) paidOutgoings += amount;
+  });
+
+  // Transactions net (signed)
+  let transNet = 0;
+  const txnRows = month.querySelectorAll(".month-section[data-section='Transactions'] tbody tr");
+  txnRows.forEach(row => {
+    const amtInput = row.querySelector("td:nth-child(5) input[type='number']");
+    const cb = row.querySelector(".pay-check");
+    const amount = parseFloat(amtInput?.value || 0);
+    if (!isNaN(amount)) {
+      transNet += amount;
+      if (cb) cb.dataset.amount = amount;
+    }
+  });
+
+  const remaining = totalOutgoings - paidOutgoings;
+  const netPosition = salary + transNet - totalOutgoings;
+
+  month.querySelector(".month-total").textContent = totalOutgoings.toFixed(2);
+  month.querySelector(".month-paid").textContent = paidOutgoings.toFixed(2);
+  month.querySelector(".month-remaining").textContent = remaining.toFixed(2);
+  month.querySelector(".month-trans").textContent = transNet.toFixed(2);
+  month.querySelector(".month-net").textContent = netPosition.toFixed(2);
+}
+
+function updateAllMonths() {
+  document.querySelectorAll(".month").forEach(month => updateMonthFor(month));
+}
+
+/* ============= CSV IMPORT/EXPORT ============= */
+/* CSV format:
+   Month,Section,Paid,Date,Type,Category,Amount,Description,Method
+*/
+
+function importMonthCSV(btn) {
+  const month = btn.closest(".month");
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".csv";
+
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = evt => {
+      parseMonthCSV(evt.target.result, month);
+      saveToLocalStorage();
+    };
+    reader.readAsText(file);
+  };
+
+  input.click();
+}
+
+function parseMonthCSV(csvText, month) {
+  const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
+  if (lines.length < 2) return;
+
+  const headers = lines[0].split(",").map(h => h.trim());
+  const idx = name => headers.indexOf(name);
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(",");
+    if (cols.length < headers.length) continue;
+
+    const sectionName = cols[idx("Section")]?.trim();
+    const sectionDiv = Array.from(month.querySelectorAll(".month-section")).find(
+      s => s.dataset.section === sectionName
+    );
+    if (!sectionDiv) continue;
+
+    const tbody = sectionDiv.querySelector(".payment-rows");
+    const isTxn = sectionName === "Transactions";
+
+    const paidVal = cols[idx("Paid")]?.trim().toLowerCase();
+    const isPaid = paidVal === "true" || paidVal === "1" || paidVal === "yes" || paidVal === "y";
+    const date = cols[idx("Date")]?.trim() || "";
+    const type = cols[idx("Type")]?.trim() || "";
+    const category = cols[idx("Category")]?.trim() || "";
+    const amount = cols[idx("Amount")]?.trim() || "0";
+    const desc = cols[idx("Description")]?.trim() || "";
+    const method = cols[idx("Method")]?.trim() || "";
+
+    if (isTxn) {
+      tbody.insertAdjacentHTML(
+        "beforeend",
+        `
+        <tr>
+          <td><input type="checkbox" class="pay-check" data-amount="${amount}" ${isPaid ? "checked" : ""}></td>
+          <td><input type="date" value="${date}"></td>
+          <td><input type="text" value="${type}"></td>
+          <td><input type="text" value="${category}"></td>
+          <td><input type="number" step="0.01" value="${amount}"></td>
+          <td><input type="text" value="${desc}"></td>
+          <td><input type="text" value="${method}"></td>
+          <td class="delete-row">✖</td>
+        </tr>
+        `
+      );
+    } else {
+      tbody.insertAdjacentHTML(
+        "beforeend",
+        `
+        <tr>
+          <td><input type="checkbox" class="pay-check" data-amount="${amount}" ${isPaid ? "checked" : ""}></td>
+          <td><input type="text" value="${type}"></td>
+          <td><input type="number" step="0.01" value="${amount}"></td>
+          <td><input type="text" value="${desc}"></td>
+          <td class="delete-row">✖</td>
+        </tr>
+        `
+      );
+    }
+  }
+
+  attachGlobalListeners();
+  updateMonthFor(month);
+}
+
+function exportMonthCSV(btn) {
+  const month = btn.closest(".month");
+  const title = month.querySelector("h2").innerText.trim() || "Month";
+  const rows = [];
+  rows.push("Month,Section,Paid,Date,Type,Category,Amount,Description,Method");
+
+  const monthName = title.replace(/,/g, " "); // avoid commas
+
+  month.querySelectorAll(".month-section").forEach(section => {
+    const sectionName = section.dataset.section;
+    const isTxn = sectionName === "Transactions";
+    const trs = section.querySelectorAll("tbody tr");
+
+    trs.forEach(tr => {
+      if (!tr.querySelector("td")) return;
+      if (isTxn) {
+        const cb = tr.querySelector(".pay-check");
+        const paid = cb?.checked ? "true" : "false";
+        const tds = tr.querySelectorAll("td");
+        const date = tds[1].querySelector("input")?.value || "";
+        const type = tds[2].querySelector("input,select")?.value || "";
+        const category = tds[3].querySelector("input,select")?.value || "";
+        const amount = tds[4].querySelector("input")?.value || "0";
+        const desc = tds[5].querySelector("input")?.value || "";
+        const method = tds[6].querySelector("input,select")?.value || "";
+        rows.push(
+          [
+            monthName,
+            sectionName,
+            paid,
+            date,
+            type,
+            category,
+            amount,
+            desc.replace(/,/g, " "),
+            method.replace(/,/g, " "),
+          ].join(",")
+        );
+      } else {
+        const cb = tr.querySelector(".pay-check");
+        const paid = cb?.checked ? "true" : "false";
+        const tds = tr.querySelectorAll("td");
+        const type = tds[1].querySelector("input")?.value || "";
+        const amount = tds[2].querySelector("input")?.value || "0";
+        const desc = tds[3].querySelector("input")?.value || "";
+        rows.push(
+          [
+            monthName,
+            sectionName,
+            paid,
+            "",
+            type.replace(/,/g, " "),
+            "",
+            amount,
+            desc.replace(/,/g, " "),
+            "",
+          ].join(",")
+        );
+      }
+    });
+  });
+
+  const csvContent = rows.join("\n");
+  downloadBlob(csvContent, `${title.replace(/\s+/g, "_")}.csv`, "text/csv");
+}
+
+function exportAllMonthsCSV() {
+  const rows = [];
+  rows.push("Month,Section,Paid,Date,Type,Category,Amount,Description,Method");
+
+  document.querySelectorAll(".month").forEach(month => {
+    const title = month.querySelector("h2").innerText.trim() || "Month";
+    const monthName = title.replace(/,/g, " ");
+
+    month.querySelectorAll(".month-section").forEach(section => {
+      const sectionName = section.dataset.section;
+      const isTxn = sectionName === "Transactions";
+      const trs = section.querySelectorAll("tbody tr");
+
+      trs.forEach(tr => {
+        if (!tr.querySelector("td")) return;
+        if (isTxn) {
+          const cb = tr.querySelector(".pay-check");
+          const paid = cb?.checked ? "true" : "false";
+          const tds = tr.querySelectorAll("td");
+          const date = tds[1].querySelector("input")?.value || "";
+          const type = tds[2].querySelector("input,select")?.value || "";
+          const category = tds[3].querySelector("input,select")?.value || "";
+          const amount = tds[4].querySelector("input")?.value || "0";
+          const desc = tds[5].querySelector("input")?.value || "";
+          const method = tds[6].querySelector("input,select")?.value || "";
+          rows.push(
+            [
+              monthName,
+              sectionName,
+              paid,
+              date,
+              type,
+              category,
+              amount,
+              desc.replace(/,/g, " "),
+              method.replace(/,/g, " "),
+            ].join(",")
+          );
+        } else {
+          const cb = tr.querySelector(".pay-check");
+          const paid = cb?.checked ? "true" : "false";
+          const tds = tr.querySelectorAll("td");
+          const type = tds[1].querySelector("input")?.value || "";
+          const amount = tds[2].querySelector("input")?.value || "0";
+          const desc = tds[3].querySelector("input")?.value || "";
+          rows.push(
+            [
+              monthName,
+              sectionName,
+              paid,
+              "",
+              type.replace(/,/g, " "),
+              "",
+              amount,
+              desc.replace(/,/g, " "),
+              "",
+            ].join(",")
+          );
+        }
+      });
+    });
+  });
+
+  const csvContent = rows.join("\n");
+  downloadBlob(csvContent, "All_Months.csv", "text/csv");
+}
+
+/* ============= PDF EXPORT ============= */
+
+async function downloadMonthPDF(btn) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "pt", "a4");
+
+  const month = btn.closest(".month");
+  const title = month.querySelector("h2").innerText.trim() || "Month";
+
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(18);
+  doc.text(title, 40, 40);
+
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 40, 60);
+
+  let y = 80;
+
+  const sections = month.querySelectorAll(".month-section");
+
+  sections.forEach(section => {
+    const sectionTitle = section.querySelector(".section-title").innerText.trim();
+    const sectionName = section.dataset.section;
+    const isTxn = sectionName === "Transactions";
+    const rows = section.querySelectorAll("tbody tr");
+    if (!rows.length) return;
+
+    doc.setFont("Helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text(sectionTitle, 40, y);
+
+    const head = isTxn
+      ? [["Paid", "Date", "Type", "Category", "Amount", "Description", "Method"]]
+      : [["Paid", "Type", "Amount", "Description"]];
+
+    const body = [];
+    rows.forEach(tr => {
+      const tds = tr.querySelectorAll("td");
+      if (isTxn) {
+        const paid = tds[0].querySelector("input[type=checkbox]")?.checked ? "✔" : "";
+        const date = tds[1].querySelector("input")?.value || "";
+        const type = tds[2].querySelector("input,select")?.value || "";
+        const cat = tds[3].querySelector("input,select")?.value || "";
+        const amt = tds[4].querySelector("input")?.value || "";
+        const desc = tds[5].querySelector("input")?.value || "";
+        const method = tds[6].querySelector("input,select")?.value || "";
+        body.push([paid, date, type, cat, amt, desc, method]);
+      } else {
+        const paid = tds[0].querySelector("input[type=checkbox]")?.checked ? "✔" : "";
+        const type = tds[1].querySelector("input")?.value || "";
+        const amt = tds[2].querySelector("input")?.value || "";
+        const desc = tds[3].querySelector("input")?.value || "";
+        body.push([paid, type, amt, desc]);
+      }
+    });
+
+    doc.autoTable({
+      startY: y + 10,
+      head,
+      body,
+      theme: "grid",
+      margin: { left: 40, right: 40 },
+      headStyles: { fillColor: [37, 99, 235], textColor: 255, lineWidth: 0.3 },
+      styles: {
+        font: "Helvetica",
+        fontSize: 10,
+        cellPadding: 3,
+        lineColor: [210, 210, 210],
+        lineWidth: 0.4
+      }
+    });
+
+    const finalY =
+      (doc.lastAutoTable && doc.lastAutoTable.finalY) ||
+      (doc.previousAutoTable && doc.previousAutoTable.finalY) ||
+      (y + 30);
+
+    y = finalY + 20;
+  });
+
+  // Summary
+  const total = month.querySelector(".month-total")?.innerText || "0.00";
+  const paid = month.querySelector(".month-paid")?.innerText || "0.00";
+  const remaining = month.querySelector(".month-remaining")?.innerText || "0.00";
+  const trans = month.querySelector(".month-trans")?.innerText || "0.00";
+  const net = month.querySelector(".month-net")?.innerText || "0.00";
+
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Summary", 40, y);
+
+  y += 18;
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(11);
+  [
+    `Total Outgoings: £${total}`,
+    `Paid So Far: £${paid}`,
+    `Remaining Outgoings: £${remaining}`,
+    `Net Transactions (Income - Expenses): £${trans}`,
+    `Monthly Net Position: £${net}`
+  ].forEach(line => {
+    doc.text(line, 40, y);
+    y += 16;
+  });
+
+  const fileName = `${title.replace(/\s+/g, "_")}.pdf`;
+  const pdfBytes = doc.output("arraybuffer");
+
+  // Try File System Access API for "choose location"
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: fileName,
+        types: [{
+          description: "PDF File",
+          accept: { "application/pdf": [".pdf"] }
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(pdfBytes);
+      await writable.close();
+      return;
+    } catch (err) {
+      console.log("Save picker cancelled or failed, falling back to normal download:", err);
+    }
+  }
+
+  // Fallback: regular download (on iPhone this triggers the system share/save sheet)
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  downloadBlob(blob, fileName, "application/pdf");
+}
+
+/* ============= GENERIC BLOB DOWNLOAD ============= */
+
+function downloadBlob(content, fileName, mimeType) {
+  const blob = content instanceof Blob ? content : new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ============= GLOBAL EVENT HANDLERS ============= */
+
+function attachGlobalListeners() {
+  // Delete row clicks
+  document.querySelectorAll(".delete-row").forEach(cell => {
+    cell.onclick = () => deleteRowCell(cell);
+  });
+}
+
+document.addEventListener("input", e => {
+  if (e.target.closest(".month")) {
+    const month = e.target.closest(".month");
+    updateMonthFor(month);
+    saveToLocalStorage();
+  }
+});
+document.addEventListener("change", e => {
+  if (e.target.closest(".month")) {
+    const month = e.target.closest(".month");
+    updateMonthFor(month);
+    saveToLocalStorage();
+  }
+});
+
+/* ============= INIT + PWA SW ============= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  restoreFromLocalStorage();
+  if (!document.querySelector(".month")) {
+    addMonthPage();
+  }
+
+  // Register service worker
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("service-worker.js")
+        .catch(err => console.log("SW registration failed:", err));
+    });
+  }
+});
+</script>
+
+</body>
+</html>
