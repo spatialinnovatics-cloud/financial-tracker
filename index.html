@@ -542,6 +542,31 @@ input[type="radio"] {
 .empty-state p {
   margin: 8px 0;
 }
+
+/* Notification */
+.notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--danger);
+  color: white;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  z-index: 1001;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.notification.show {
+  display: flex;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
 </style>
 </head>
 
@@ -550,6 +575,7 @@ input[type="radio"] {
 <button class="dark-toggle" onclick="toggleDarkMode()">🌙 Dark</button>
 
 <div class="loading" id="loading">Loading your data...</div>
+<div class="notification" id="notification"></div>
 
 <div class="page">
   <div class="header">
@@ -566,6 +592,7 @@ input[type="radio"] {
     <button onclick="addMonth()">📅 Add Month</button>
     <button class="success" onclick="exportPDF()">📄 Export PDF</button>
     <button class="secondary" onclick="exportAllCSV()">📊 Export All CSV</button>
+    <button class="secondary" onclick="showBackupManager()">💾 Backup</button>
     <div class="last-saved" id="last-saved">Ready</div>
   </div>
 
@@ -580,58 +607,111 @@ input[type="radio"] {
 <script>
 // Global variables
 window.jsPDF = window.jspdf.jsPDF;
-let methods = [];
-let appData = { months: [] };
 
 // Initialize app
-async function initApp() {
+function initApp() {
   showLoading(true);
   
   try {
-    // Load methods
-    const savedMethods = localStorage.getItem('financialTracker_methods');
-    methods = savedMethods ? JSON.parse(savedMethods) : [
-      "Cash", "Debit Card", "Credit Card", "Bank Transfer", "Direct Debit",
-      "Standing Order", "PayPal", "Apple Pay", "Google Pay", "Other"
-    ];
-    
-    // Load app data
-    const savedData = localStorage.getItem('financialTracker_data');
-    if (savedData) {
-      appData = JSON.parse(savedData);
-      
-      // Restore salary
-      if (appData.salary !== undefined) {
-        document.getElementById('salary').value = appData.salary;
-      }
-      
-      // Restore months
-      if (appData.months && appData.months.length > 0) {
-        renderAllMonths();
-        document.getElementById('empty-state').style.display = 'none';
-      }
-    }
-    
     // Restore dark mode
     if (localStorage.getItem('darkMode') === 'true') {
       document.body.classList.add('dark');
       document.querySelector('.dark-toggle').textContent = '☀️ Light';
     }
     
+    // Restore payment methods
+    const savedMethods = localStorage.getItem('fin_tracker_methods');
+    if (savedMethods) {
+      try {
+        window.paymentMethods = JSON.parse(savedMethods);
+      } catch (e) {
+        console.warn('Error parsing methods, using defaults');
+        window.paymentMethods = getDefaultMethods();
+      }
+    } else {
+      window.paymentMethods = getDefaultMethods();
+    }
+    
+    // Restore app data
+    const savedData = localStorage.getItem('fin_tracker_data');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        
+        // Restore salary
+        if (data.salary !== undefined) {
+          document.getElementById('salary').value = data.salary;
+        }
+        
+        // Restore months
+        if (data.months && data.months.length > 0) {
+          renderAllMonths(data.months);
+          document.getElementById('empty-state').style.display = 'none';
+        } else {
+          // Add default month if none exists
+          setTimeout(() => {
+            if (!document.querySelector('.month-section')) {
+              addMonth();
+            }
+          }, 100);
+        }
+      } catch (e) {
+        console.error('Error parsing saved data:', e);
+        showNotification('Error loading saved data. Starting fresh.', 'error');
+        // Start fresh
+        window.paymentMethods = getDefaultMethods();
+        saveMethods();
+        addMonth();
+      }
+    } else {
+      // No saved data, add default month
+      setTimeout(() => {
+        if (!document.querySelector('.month-section')) {
+          addMonth();
+        }
+      }, 100);
+    }
+    
     updateLastSaved('Data loaded');
     
   } catch (error) {
-    console.error('Error loading data:', error);
-    alert('Error loading saved data. Starting fresh.');
-    // Initialize with default data
-    methods = [
-      "Cash", "Debit Card", "Credit Card", "Bank Transfer", "Direct Debit",
-      "Standing Order", "PayPal", "Apple Pay", "Google Pay", "Other"
-    ];
-    saveMethods();
+    console.error('Error initializing app:', error);
+    showNotification('Error loading app. Please refresh.', 'error');
+    // Fallback to basic setup
+    window.paymentMethods = getDefaultMethods();
+    addMonth();
   } finally {
-    showLoading(false);
+    setTimeout(() => {
+      showLoading(false);
+    }, 500);
   }
+}
+
+// Default payment methods
+function getDefaultMethods() {
+  return [
+    "Cash", "Debit Card", "Credit Card", "Bank Transfer", "Direct Debit",
+    "Standing Order", "PayPal", "Apple Pay", "Google Pay", "Other"
+  ];
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.className = 'notification show';
+  
+  if (type === 'error') {
+    notification.style.background = 'var(--danger)';
+  } else if (type === 'success') {
+    notification.style.background = 'var(--success)';
+  } else {
+    notification.style.background = 'var(--accent)';
+  }
+  
+  setTimeout(() => {
+    notification.className = 'notification';
+  }, 3000);
 }
 
 // Show/hide loading indicator
@@ -639,31 +719,29 @@ function showLoading(show) {
   document.getElementById('loading').style.display = show ? 'flex' : 'none';
 }
 
-// Save methods to localStorage
+// Save payment methods
 function saveMethods() {
-  localStorage.setItem('financialTracker_methods', JSON.stringify(methods));
+  localStorage.setItem('fin_tracker_methods', JSON.stringify(window.paymentMethods));
 }
 
-// Save all app data to localStorage
+// Save all app data
 function saveAll() {
   try {
-    // Collect current state
     const salary = document.getElementById('salary').value;
     const months = [];
     
-    // Collect data from each month
+    // Collect all months data
     document.querySelectorAll('.month-section').forEach(monthEl => {
-      const month = {
+      const monthData = {
         id: monthEl.id,
         name: monthEl.querySelector('.month-name').value,
-        salary: salary,
         coreBills: [],
         overdraftEntries: []
       };
       
-      // Core bills
+      // Get core bills
       monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-        month.coreBills.push({
+        monthData.coreBills.push({
           date: row.querySelector('.date-input')?.value || '',
           method: row.querySelector('.payment-method')?.value || '',
           company: row.querySelector('.company-input')?.value || '',
@@ -673,9 +751,9 @@ function saveAll() {
         });
       });
       
-      // Overdraft entries
+      // Get overdraft entries
       monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-        month.overdraftEntries.push({
+        monthData.overdraftEntries.push({
           date: row.querySelector('.date-input')?.value || '',
           method: row.querySelector('.payment-method')?.value || '',
           company: row.querySelector('.company-input')?.value || '',
@@ -688,25 +766,24 @@ function saveAll() {
         });
       });
       
-      months.push(month);
+      months.push(monthData);
     });
     
-    // Update appData
-    appData = {
+    // Save to localStorage
+    const dataToSave = {
       salary: salary,
       months: months,
       lastSaved: new Date().toISOString()
     };
     
-    // Save to localStorage
-    localStorage.setItem('financialTracker_data', JSON.stringify(appData));
+    localStorage.setItem('fin_tracker_data', JSON.stringify(dataToSave));
     
     updateAll();
     updateLastSaved();
     
   } catch (error) {
     console.error('Error saving data:', error);
-    updateLastSaved('Error saving');
+    showNotification('Error saving data', 'error');
   }
 }
 
@@ -721,7 +798,7 @@ function updateLastSaved(message) {
   }
 }
 
-// Payment Methods Manager Modal
+// Payment Methods Manager
 let methodsManagerModal = null;
 
 function showMethodsManager() {
@@ -740,7 +817,7 @@ function showMethodsManager() {
         <p style="margin-top: 0; opacity: 0.7; font-size: 14px;">Add, edit, or remove payment methods</p>
         
         <div id="methods-list-container">
-          ${methods.map((method, index) => `
+          ${window.paymentMethods.map((method, index) => `
             <div class="method-item" data-index="${index}">
               <input type="text" value="${method}" 
                 oninput="updateMethod(${index}, this.value)"
@@ -792,18 +869,19 @@ function saveMethodsAndClose() {
   renderMethodDropdowns();
   closeMethodsManager();
   saveAll();
+  showNotification('Payment methods saved', 'success');
 }
 
 function updateMethod(index, value) {
-  methods[index] = value.trim();
+  window.paymentMethods[index] = value.trim();
 }
 
 function removeMethod(index) {
-  if (methods.length > 1) {
-    methods.splice(index, 1);
+  if (window.paymentMethods.length > 1) {
+    window.paymentMethods.splice(index, 1);
     const container = document.getElementById('methods-list-container');
     if (container) {
-      container.innerHTML = methods.map((method, idx) => `
+      container.innerHTML = window.paymentMethods.map((method, idx) => `
         <div class="method-item" data-index="${idx}">
           <input type="text" value="${method}" 
             oninput="updateMethod(${idx}, this.value)"
@@ -813,7 +891,7 @@ function removeMethod(index) {
       `).join('');
     }
   } else {
-    alert('You must have at least one payment method.');
+    showNotification('You must have at least one payment method.', 'error');
   }
 }
 
@@ -822,23 +900,23 @@ function addNewMethod() {
   const value = input.value.trim();
   
   if (value) {
-    if (!methods.includes(value)) {
-      methods.push(value);
+    if (!window.paymentMethods.includes(value)) {
+      window.paymentMethods.push(value);
       const container = document.getElementById('methods-list-container');
       if (container) {
         container.innerHTML += `
-          <div class="method-item" data-index="${methods.length - 1}">
+          <div class="method-item" data-index="${window.paymentMethods.length - 1}">
             <input type="text" value="${value}" 
-              oninput="updateMethod(${methods.length - 1}, this.value)"
+              oninput="updateMethod(${window.paymentMethods.length - 1}, this.value)"
               placeholder="Payment method name">
-            <button class="delete-btn" onclick="removeMethod(${methods.length - 1})" style="font-size: 14px;">Remove</button>
+            <button class="delete-btn" onclick="removeMethod(${window.paymentMethods.length - 1})" style="font-size: 14px;">Remove</button>
           </div>
         `;
       }
       input.value = '';
       input.focus();
     } else {
-      alert('This method already exists.');
+      showNotification('This method already exists.', 'error');
     }
   }
 }
@@ -848,7 +926,7 @@ function renderMethodDropdowns() {
     const current = select.value;
     select.innerHTML = `
       <option value=""></option>
-      ${methods.map(m => `<option value="${m}" ${m === current ? 'selected' : ''}>${m}</option>`).join('')}
+      ${window.paymentMethods.map(m => `<option value="${m}" ${m === current ? 'selected' : ''}>${m}</option>`).join('')}
       <option value="__manage">⚙ Manage Methods...</option>
     `;
   });
@@ -858,7 +936,7 @@ function getMethodSelect(current = '') {
   return `
     <select class="payment-method" onchange="handleMethodChange(this)">
       <option value=""></option>
-      ${methods.map(m => `<option value="${m}" ${m === current ? 'selected' : ''}>${m}</option>`).join('')}
+      ${window.paymentMethods.map(m => `<option value="${m}" ${m === current ? 'selected' : ''}>${m}</option>`).join('')}
       <option value="__manage">⚙ Manage Methods...</option>
     </select>
   `;
@@ -938,18 +1016,18 @@ function getOverdraftRow(data = {}) {
 }
 
 // Month Rendering
-function renderAllMonths() {
+function renderAllMonths(monthsData) {
   const monthsContainer = document.getElementById('months');
   monthsContainer.innerHTML = '';
   
-  if (appData.months.length === 0) {
+  if (!monthsData || monthsData.length === 0) {
     document.getElementById('empty-state').style.display = 'block';
     return;
   }
   
   document.getElementById('empty-state').style.display = 'none';
   
-  appData.months.forEach(monthData => {
+  monthsData.forEach(monthData => {
     const monthEl = createMonthElement(monthData);
     monthsContainer.appendChild(monthEl);
   });
@@ -1066,7 +1144,7 @@ function deleteRow(button) {
     row.remove();
     saveAll();
   } else {
-    alert('Cannot delete the last row. Clear the month instead.');
+    showNotification('Cannot delete the last row. Clear the month instead.', 'error');
   }
 }
 
@@ -1082,14 +1160,13 @@ function addMonth() {
     overdraftEntries: []
   };
   
-  appData.months.push(newMonth);
-  
   const monthEl = createMonthElement(newMonth);
   document.getElementById('months').appendChild(monthEl);
   document.getElementById('empty-state').style.display = 'none';
   
   renderMethodDropdowns();
   saveAll();
+  showNotification('Month added successfully', 'success');
 }
 
 function clearMonth(monthId) {
@@ -1110,6 +1187,7 @@ function clearMonth(monthId) {
       
       renderMethodDropdowns();
       saveAll();
+      showNotification('Month cleared', 'success');
     }
   }
 }
@@ -1120,17 +1198,12 @@ function deleteMonth(monthId) {
     if (monthEl) {
       monthEl.remove();
       
-      // Remove from appData
-      const index = appData.months.findIndex(m => m.id === monthId);
-      if (index > -1) {
-        appData.months.splice(index, 1);
-      }
-      
-      if (appData.months.length === 0) {
+      if (!document.querySelector('.month-section')) {
         document.getElementById('empty-state').style.display = 'block';
       }
       
       saveAll();
+      showNotification('Month deleted', 'success');
     }
   }
 }
@@ -1182,6 +1255,153 @@ function toggleDarkMode() {
   localStorage.setItem('darkMode', document.body.classList.contains('dark'));
 }
 
+// Backup Manager
+function showBackupManager() {
+  const modalHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">←</button>
+        <h3>Backup & Restore</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      </div>
+      <div class="modal-content">
+        <p style="margin-top: 0; opacity: 0.7; font-size: 14px;">Backup your data or restore from a backup file</p>
+        
+        <div style="margin-bottom: 20px;">
+          <h4 style="margin: 0 0 10px 0;">Backup Data</h4>
+          <p style="margin: 0 0 10px 0; opacity: 0.7; font-size: 13px;">Download a backup of all your financial data</p>
+          <button class="success" onclick="downloadBackup()" style="width: 100%;">📥 Download Backup</button>
+        </div>
+        
+        <div>
+          <h4 style="margin: 0 0 10px 0;">Restore Data</h4>
+          <p style="margin: 0 0 10px 0; opacity: 0.7; font-size: 13px;">Upload a backup file to restore your data</p>
+          <input type="file" id="restore-file" accept=".json" style="margin-bottom: 10px; padding: 8px;">
+          <button class="secondary" onclick="restoreBackup()" style="width: 100%;">📤 Restore from Backup</button>
+          <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.6; color: var(--danger);">Warning: This will replace all current data!</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="this.closest('.modal-overlay').remove()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = modalHTML;
+  document.body.appendChild(overlay);
+}
+
+function downloadBackup() {
+  const data = {
+    salary: document.getElementById('salary').value,
+    paymentMethods: window.paymentMethods,
+    months: [],
+    exported: new Date().toISOString()
+  };
+  
+  // Collect months data
+  document.querySelectorAll('.month-section').forEach(monthEl => {
+    const monthData = {
+      name: monthEl.querySelector('.month-name').value,
+      coreBills: [],
+      overdraftEntries: []
+    };
+    
+    monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
+      monthData.coreBills.push({
+        date: row.querySelector('.date-input')?.value || '',
+        method: row.querySelector('.payment-method')?.value || '',
+        company: row.querySelector('.company-input')?.value || '',
+        amount: row.querySelector('.amount-input')?.value || '0',
+        type: row.querySelector('.type-select')?.value || '',
+        paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+      });
+    });
+    
+    monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
+      monthData.overdraftEntries.push({
+        date: row.querySelector('.date-input')?.value || '',
+        method: row.querySelector('.payment-method')?.value || '',
+        company: row.querySelector('.company-input')?.value || '',
+        amount: row.querySelector('.amount-input')?.value || '0',
+        type: row.querySelector('.type-select')?.value || '',
+        currentBalance: row.querySelector('.current-balance')?.value || '',
+        outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
+        limit: row.querySelector('.limit-input')?.value || '',
+        paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+      });
+    });
+    
+    data.months.push(monthData);
+  });
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `financial-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  showNotification('Backup downloaded successfully', 'success');
+  document.querySelector('.modal-overlay')?.remove();
+}
+
+function restoreBackup() {
+  const fileInput = document.getElementById('restore-file');
+  const file = fileInput.files[0];
+  
+  if (!file) {
+    showNotification('Please select a backup file', 'error');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+      
+      // Validate backup structure
+      if (!backup.salary && !backup.months) {
+        throw new Error('Invalid backup file format');
+      }
+      
+      if (confirm('Restore backup? This will replace all current data.')) {
+        // Restore salary
+        document.getElementById('salary').value = backup.salary || '0';
+        
+        // Restore payment methods
+        if (backup.paymentMethods && Array.isArray(backup.paymentMethods)) {
+          window.paymentMethods = backup.paymentMethods;
+          saveMethods();
+        }
+        
+        // Clear current months
+        document.getElementById('months').innerHTML = '';
+        document.getElementById('empty-state').style.display = 'block';
+        
+        // Restore months
+        if (backup.months && backup.months.length > 0) {
+          renderAllMonths(backup.months);
+          document.getElementById('empty-state').style.display = 'none';
+        }
+        
+        saveAll();
+        showNotification('Backup restored successfully', 'success');
+        document.querySelector('.modal-overlay')?.remove();
+      }
+    } catch (error) {
+      console.error('Error restoring backup:', error);
+      showNotification('Error restoring backup. Invalid file format.', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
 // CSV Export
 function exportMonthCSV(monthId) {
   const month = document.getElementById(monthId);
@@ -1226,54 +1446,63 @@ function exportMonthCSV(monthId) {
   });
   
   downloadCSV(csv.join('\n'), `${monthName.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
+  showNotification('CSV exported successfully', 'success');
 }
 
 function exportAllCSV() {
-  if (appData.months.length === 0) {
-    alert('No data to export.');
+  const months = document.querySelectorAll('.month-section');
+  if (months.length === 0) {
+    showNotification('No data to export', 'error');
     return;
   }
   
   let csv = ['Financial Tracker - All Data'];
   csv.push(`Generated: ${new Date().toLocaleString()}`);
-  csv.push(`Salary: £${appData.salary || '0'}`);
+  csv.push(`Salary: £${document.getElementById('salary').value || '0'}`);
   csv.push('');
   
-  appData.months.forEach(monthData => {
-    csv.push(`Month: ${monthData.name}`);
+  months.forEach(monthEl => {
+    const monthName = monthEl.querySelector('.month-name').value;
+    csv.push(`Month: ${monthName}`);
     csv.push('='.repeat(50));
     
-    if (monthData.coreBills.length > 0) {
+    // Core Bills
+    const hasCoreBills = monthEl.querySelectorAll('#core-bills-table tbody tr').length > 0;
+    if (hasCoreBills) {
       csv.push('Core Bills');
       csv.push('Date,Payment Method,Company,Amount,Payment Type,Paid Status');
-      monthData.coreBills.forEach(bill => {
-        csv.push([
-          bill.date,
-          bill.method,
-          bill.company,
-          bill.amount,
-          bill.type,
-          bill.paid
-        ].map(c => `"${c}"`).join(','));
+      monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
+        const cells = [
+          row.querySelector('.date-input')?.value || '',
+          row.querySelector('.payment-method')?.value || '',
+          row.querySelector('.company-input')?.value || '',
+          row.querySelector('.amount-input')?.value || '0',
+          row.querySelector('.type-select')?.value || '',
+          row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+        ];
+        csv.push(cells.map(c => `"${c}"`).join(','));
       });
       csv.push('');
     }
     
-    if (monthData.overdraftEntries.length > 0) {
+    // Overdraft Table
+    const hasOverdraft = monthEl.querySelectorAll('#overdraft-table tbody tr').length > 0;
+    if (hasOverdraft) {
       csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
       csv.push('Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status');
-      monthData.overdraftEntries.forEach(entry => {
-        csv.push([
-          entry.date,
-          entry.method,
-          entry.company,
-          entry.amount,
-          entry.type,
-          entry.currentBalance,
-          entry.outstandingBalance,
-          entry.limit,
-          entry.paid
-        ].map(c => `"${c}"`).join(','));
+      monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
+        const cells = [
+          row.querySelector('.date-input')?.value || '',
+          row.querySelector('.payment-method')?.value || '',
+          row.querySelector('.company-input')?.value || '',
+          row.querySelector('.amount-input')?.value || '0',
+          row.querySelector('.type-select')?.value || '',
+          row.querySelector('.current-balance')?.value || '',
+          row.querySelector('.outstanding-balance')?.value || '',
+          row.querySelector('.limit-input')?.value || '',
+          row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+        ];
+        csv.push(cells.map(c => `"${c}"`).join(','));
       });
     }
     
@@ -1281,6 +1510,7 @@ function exportAllCSV() {
   });
   
   downloadCSV(csv.join('\n'), `financial_tracker_all_data_${new Date().toISOString().split('T')[0]}.csv`);
+  showNotification('All data exported to CSV', 'success');
 }
 
 function downloadCSV(data, filename) {
@@ -1297,8 +1527,9 @@ function downloadCSV(data, filename) {
 
 // PDF Export
 function exportPDF() {
-  if (appData.months.length === 0) {
-    alert('No data to export.');
+  const months = document.querySelectorAll('.month-section');
+  if (months.length === 0) {
+    showNotification('No data to export', 'error');
     return;
   }
   
@@ -1313,41 +1544,47 @@ function exportPDF() {
   doc.setFontSize(11);
   doc.setTextColor(100);
   doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 30);
-  doc.text(`Monthly Salary: £${parseFloat(appData.salary || 0).toFixed(2)}`, 20, 36);
+  doc.text(`Monthly Salary: £${parseFloat(document.getElementById('salary').value || 0).toFixed(2)}`, 20, 36);
   
   let yPos = 45;
   
   // Process each month
-  appData.months.forEach((month, index) => {
+  months.forEach((monthEl, index) => {
     if (index > 0) {
       doc.addPage();
       yPos = 20;
     }
     
+    const monthName = monthEl.querySelector('.month-name').value;
+    
     // Month Header
     doc.setFontSize(16);
     doc.setTextColor(0);
-    doc.text(month.name, 20, yPos);
+    doc.text(monthName, 20, yPos);
     yPos += 10;
     
     // Core Bills Table
-    if (month.coreBills.length > 0) {
+    const coreRows = [];
+    monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
+      const date = row.querySelector('.date-input')?.value || '';
+      const company = row.querySelector('.company-input')?.value || '';
+      const amount = row.querySelector('.amount-input')?.value || '0';
+      const type = row.querySelector('.type-select')?.value || '';
+      const paid = row.querySelector('input[name="paid"]:checked')?.value || 'not-paid';
+      
+      if (date || company || amount !== '0') {
+        coreRows.push([date, company, '£' + parseFloat(amount).toFixed(2), type, paid === 'paid' ? '✓' : '✗']);
+      }
+    });
+    
+    if (coreRows.length > 0) {
       doc.setFontSize(12);
       doc.setTextColor(50, 50, 50);
       doc.text('Core Bills', 20, yPos);
       yPos += 8;
       
-      const coreHeaders = [['Date', 'Company', 'Amount', 'Type', 'Paid']];
-      const coreRows = month.coreBills.map(bill => [
-        bill.date,
-        bill.company,
-        '£' + parseFloat(bill.amount).toFixed(2),
-        bill.type,
-        bill.paid === 'paid' ? '✓' : '✗'
-      ]);
-      
       doc.autoTable({
-        head: coreHeaders,
+        head: [['Date', 'Company', 'Amount', 'Type', 'Paid']],
         body: coreRows,
         startY: yPos,
         theme: 'grid',
@@ -1358,24 +1595,37 @@ function exportPDF() {
     }
     
     // Overdraft Table
-    if (month.overdraftEntries.length > 0) {
+    const overdraftRows = [];
+    monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
+      const date = row.querySelector('.date-input')?.value || '';
+      const company = row.querySelector('.company-input')?.value || '';
+      const amount = row.querySelector('.amount-input')?.value || '0';
+      const type = row.querySelector('.type-select')?.value || '';
+      const current = row.querySelector('.current-balance')?.value || '';
+      const outstanding = row.querySelector('.outstanding-balance')?.value || '';
+      const limit = row.querySelector('.limit-input')?.value || '';
+      const paid = row.querySelector('input[name="paid"]:checked')?.value || 'not-paid';
+      
+      if (date || company || amount !== '0' || current || outstanding || limit) {
+        overdraftRows.push([
+          date,
+          company,
+          '£' + parseFloat(amount).toFixed(2),
+          type,
+          current ? '£' + parseFloat(current).toFixed(2) : '',
+          outstanding ? '£' + parseFloat(outstanding).toFixed(2) : '',
+          limit ? '£' + parseFloat(limit).toFixed(2) : '',
+          paid === 'paid' ? '✓' : '✗'
+        ]);
+      }
+    });
+    
+    if (overdraftRows.length > 0) {
       doc.text('Overdraft, BNPL, Finance Plan, Debt Tracking', 20, yPos);
       yPos += 8;
       
-      const overdraftHeaders = [['Date', 'Company', 'Amount', 'Type', 'Current', 'Outstanding', 'Limit', 'Paid']];
-      const overdraftRows = month.overdraftEntries.map(entry => [
-        entry.date,
-        entry.company,
-        '£' + parseFloat(entry.amount).toFixed(2),
-        entry.type,
-        entry.currentBalance ? '£' + parseFloat(entry.currentBalance).toFixed(2) : '',
-        entry.outstandingBalance ? '£' + parseFloat(entry.outstandingBalance).toFixed(2) : '',
-        entry.limit ? '£' + parseFloat(entry.limit).toFixed(2) : '',
-        entry.paid === 'paid' ? '✓' : '✗'
-      ]);
-      
       doc.autoTable({
-        head: overdraftHeaders,
+        head: [['Date', 'Company', 'Amount', 'Type', 'Current', 'Outstanding', 'Limit', 'Paid']],
         body: overdraftRows,
         startY: yPos,
         theme: 'grid',
@@ -1386,10 +1636,11 @@ function exportPDF() {
       yPos = doc.lastAutoTable.finalY + 15;
     }
     
-    // Calculate totals for this month
-    const coreTotal = month.coreBills.reduce((sum, bill) => sum + parseFloat(bill.amount || 0), 0);
-    const overdraftTotal = month.overdraftEntries.reduce((sum, entry) => sum + parseFloat(entry.amount || 0), 0);
-    const remaining = parseFloat(appData.salary || 0) - coreTotal - overdraftTotal;
+    // Calculate totals
+    const coreTotal = coreRows.reduce((sum, row) => sum + parseFloat(row[2].replace('£', '') || 0), 0);
+    const overdraftTotal = overdraftRows.reduce((sum, row) => sum + parseFloat(row[2].replace('£', '') || 0), 0);
+    const salary = parseFloat(document.getElementById('salary').value) || 0;
+    const remaining = salary - coreTotal - overdraftTotal;
     
     // Summary
     doc.setFontSize(12);
@@ -1403,27 +1654,34 @@ function exportPDF() {
   
   // Save PDF
   doc.save(`financial_tracker_report_${new Date().toISOString().split('T')[0]}.pdf`);
+  showNotification('PDF exported successfully', 'success');
 }
 
 // Auto-save
 setInterval(saveAll, 30000); // Auto-save every 30 seconds
 
-// Initialize app when DOM is loaded
-document.addEventListener('DOMContentLoaded', initApp);
-
 // Save on page unload
-window.addEventListener('beforeunload', (e) => {
+window.addEventListener('beforeunload', () => {
   saveAll();
 });
 
-// Service Worker registration for PWA (optional)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(error => {
-      console.log('Service Worker registration failed:', error);
-    });
-  });
-}
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', initApp);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  // Ctrl+S or Cmd+S to save
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    saveAll();
+    showNotification('Data saved', 'success');
+  }
+  // Escape to close modals
+  if (e.key === 'Escape') {
+    closeMethodsManager();
+    document.querySelector('.modal-overlay')?.remove();
+  }
+});
 </script>
 </body>
 </html>
