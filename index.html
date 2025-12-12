@@ -25,6 +25,7 @@
   --success: #059669;
   --danger: #dc2626;
   --warning: #d97706;
+  --nav-height: 60px;
 }
 body.dark {
   --bg: #0d1117;
@@ -43,13 +44,14 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
   font-size: 14px;
+  padding-bottom: var(--nav-height);
 }
 .page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
   background: var(--card);
-  min-height: 100vh;
+  min-height: calc(100vh - var(--nav-height));
 }
 
 /* Header */
@@ -150,6 +152,15 @@ button.warning {
   padding: 16px;
   margin-bottom: 20px;
   border: 1px solid var(--line);
+  display: none;
+}
+.month-section.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .month-header {
   display: flex;
@@ -546,7 +557,7 @@ input[type="radio"] {
 /* Notification */
 .notification {
   position: fixed;
-  bottom: 20px;
+  bottom: calc(var(--nav-height) + 20px);
   left: 50%;
   transform: translateX(-50%);
   background: var(--danger);
@@ -567,6 +578,160 @@ input[type="radio"] {
   from { transform: translateX(-50%) translateY(100px); opacity: 0; }
   to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+}
+.pagination-btn {
+  padding: 8px 16px;
+  background: var(--soft);
+  color: var(--text);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pagination-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: white;
+}
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pagination-info {
+  font-size: 14px;
+  color: var(--text);
+  opacity: 0.7;
+}
+.pagination-dots {
+  display: flex;
+  gap: 8px;
+}
+.pagination-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  cursor: pointer;
+}
+.pagination-dot.active {
+  background: var(--accent);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  padding: 0 10px;
+}
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.7;
+  transition: all 0.2s;
+  flex: 1;
+  max-width: 100px;
+}
+.nav-btn:hover {
+  opacity: 1;
+  background: var(--soft);
+}
+.nav-btn.active {
+  opacity: 1;
+  color: var(--accent);
+  background: var(--soft);
+}
+.nav-icon {
+  font-size: 20px;
+}
+
+/* Reports Page */
+.reports-page {
+  display: none;
+}
+.reports-page.active {
+  display: block;
+}
+.report-card {
+  background: var(--soft);
+  padding: 20px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.report-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.report-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+.report-card p {
+  margin: 0;
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+/* Help Text */
+.help-text {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Reports Modal */
+.reports-modal {
+  max-width: 800px;
+}
+.report-section {
+  margin-bottom: 24px;
+}
+.report-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: var(--text);
+  opacity: 0.9;
+}
+.chart-placeholder {
+  background: var(--soft);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  opacity: 0.7;
+  margin: 20px 0;
+}
 </style>
 </head>
 
@@ -577,7 +742,8 @@ input[type="radio"] {
 <div class="loading" id="loading">Loading your data...</div>
 <div class="notification" id="notification"></div>
 
-<div class="page">
+<!-- Home Page -->
+<div id="home-page" class="page">
   <div class="header">
     <h1>Financial Tracker</h1>
     <p class="subtitle">Core Bills • Overdraft Tracking • BNPL • Finance Plans • Debt</p>
@@ -596,17 +762,74 @@ input[type="radio"] {
     <div class="last-saved" id="last-saved">Ready</div>
   </div>
 
-  <div id="months">
+  <div id="months-container">
     <div class="empty-state" id="empty-state">
       <h3>No months added yet</h3>
       <p>Click "Add Month" to start tracking your finances</p>
     </div>
   </div>
+
+  <div class="pagination" id="pagination" style="display: none;">
+    <button class="pagination-btn" onclick="prevMonth()" id="prev-btn">
+      ← Previous
+    </button>
+    <div class="pagination-info" id="page-info">Page 1 of 1</div>
+    <button class="pagination-btn" onclick="nextMonth()" id="next-btn">
+      Next →
+    </button>
+  </div>
+</div>
+
+<!-- Reports Page -->
+<div id="reports-page" class="page reports-page">
+  <div class="header">
+    <h1>Reports & Analytics</h1>
+    <p class="subtitle">View insights and trends from your financial data</p>
+  </div>
+
+  <div class="report-card" onclick="showMonthlySummaryReport()">
+    <h3>📊 Monthly Summary</h3>
+    <p>Overview of all months with totals and comparisons</p>
+  </div>
+
+  <div class="report-card" onclick="showCategoryBreakdown()">
+    <h3>📈 Category Breakdown</h3>
+    <p>Analysis of spending by payment type and category</p>
+  </div>
+
+  <div class="report-card" onclick="showPaymentMethodAnalysis()">
+    <h3>💳 Payment Method Analysis</h3>
+    <p>See which payment methods you use most frequently</p>
+  </div>
+
+  <div class="report-card" onclick="showDebtOverview()">
+    <h3>📉 Debt & Overdraft Overview</h3>
+    <p>Track your debt, overdraft, and finance plan balances</p>
+  </div>
+
+  <div class="report-card" onclick="showYearlyTrends()">
+    <h3>📅 Yearly Trends</h3>
+    <p>View your financial patterns over time</p>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="showPage('home')">
+    <span class="nav-icon">🏠</span>
+    <span>Home</span>
+  </button>
+  <button class="nav-btn" id="nav-reports" onclick="showPage('reports')">
+    <span class="nav-icon">📊</span>
+    <span>Reports</span>
+  </button>
 </div>
 
 <script>
 // Global variables
 window.jsPDF = window.jspdf.jsPDF;
+let currentMonthIndex = 0;
+let monthsData = [];
 
 // Initialize app
 function initApp() {
@@ -645,12 +868,15 @@ function initApp() {
         
         // Restore months
         if (data.months && data.months.length > 0) {
-          renderAllMonths(data.months);
+          monthsData = data.months;
+          renderCurrentMonth();
+          updatePagination();
           document.getElementById('empty-state').style.display = 'none';
+          document.getElementById('pagination').style.display = 'flex';
         } else {
           // Add default month if none exists
           setTimeout(() => {
-            if (!document.querySelector('.month-section')) {
+            if (monthsData.length === 0) {
               addMonth();
             }
           }, 100);
@@ -664,10 +890,10 @@ function initApp() {
         addMonth();
       }
     } else {
-      // No saved data, add default month
+      // No saved data
       setTimeout(() => {
-        if (!document.querySelector('.month-section')) {
-          addMonth();
+        if (monthsData.length === 0) {
+          document.getElementById('empty-state').style.display = 'block';
         }
       }, 100);
     }
@@ -728,51 +954,53 @@ function saveMethods() {
 function saveAll() {
   try {
     const salary = document.getElementById('salary').value;
-    const months = [];
     
-    // Collect all months data
-    document.querySelectorAll('.month-section').forEach(monthEl => {
-      const monthData = {
-        id: monthEl.id,
-        name: monthEl.querySelector('.month-name').value,
-        coreBills: [],
-        overdraftEntries: []
-      };
-      
-      // Get core bills
-      monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-        monthData.coreBills.push({
-          date: row.querySelector('.date-input')?.value || '',
-          method: row.querySelector('.payment-method')?.value || '',
-          company: row.querySelector('.company-input')?.value || '',
-          amount: row.querySelector('.amount-input')?.value || '0',
-          type: row.querySelector('.type-select')?.value || '',
-          paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+    // Update current month data
+    if (monthsData[currentMonthIndex]) {
+      const monthEl = document.querySelector('.month-section.active');
+      if (monthEl) {
+        const monthData = {
+          id: monthEl.id,
+          name: monthEl.querySelector('.month-name').value,
+          coreBills: [],
+          overdraftEntries: []
+        };
+        
+        // Get core bills
+        monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
+          monthData.coreBills.push({
+            date: row.querySelector('.date-input')?.value || '',
+            method: row.querySelector('.payment-method')?.value || '',
+            company: row.querySelector('.company-input')?.value || '',
+            amount: row.querySelector('.amount-input')?.value || '0',
+            type: row.querySelector('.type-select')?.value || '',
+            paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+          });
         });
-      });
-      
-      // Get overdraft entries
-      monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-        monthData.overdraftEntries.push({
-          date: row.querySelector('.date-input')?.value || '',
-          method: row.querySelector('.payment-method')?.value || '',
-          company: row.querySelector('.company-input')?.value || '',
-          amount: row.querySelector('.amount-input')?.value || '0',
-          type: row.querySelector('.type-select')?.value || '',
-          currentBalance: row.querySelector('.current-balance')?.value || '',
-          outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
-          limit: row.querySelector('.limit-input')?.value || '',
-          paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+        
+        // Get overdraft entries - FIXED LIMIT FIELD
+        monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
+          monthData.overdraftEntries.push({
+            date: row.querySelector('.date-input')?.value || '',
+            method: row.querySelector('.payment-method')?.value || '',
+            company: row.querySelector('.company-input')?.value || '',
+            amount: row.querySelector('.amount-input')?.value || '0',
+            type: row.querySelector('.type-select')?.value || '',
+            currentBalance: row.querySelector('.current-balance')?.value || '',
+            outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
+            limit: row.querySelector('.limit-input')?.value || '', // FIXED: This was .limit before
+            paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+          });
         });
-      });
-      
-      months.push(monthData);
-    });
+        
+        monthsData[currentMonthIndex] = monthData;
+      }
+    }
     
     // Save to localStorage
     const dataToSave = {
       salary: salary,
-      months: months,
+      months: monthsData,
       lastSaved: new Date().toISOString()
     };
     
@@ -951,7 +1179,7 @@ function handleMethodChange(select) {
   }
 }
 
-// Row Templates
+// Row Templates - FIXED LIMIT FIELD
 function getCoreBillsRow(data = {}) {
   return `
     <tr>
@@ -1015,25 +1243,31 @@ function getOverdraftRow(data = {}) {
   `;
 }
 
-// Month Rendering
-function renderAllMonths(monthsData) {
-  const monthsContainer = document.getElementById('months');
-  monthsContainer.innerHTML = '';
+// Month Rendering with Pagination
+function renderCurrentMonth() {
+  const container = document.getElementById('months-container');
   
-  if (!monthsData || monthsData.length === 0) {
-    document.getElementById('empty-state').style.display = 'block';
+  if (monthsData.length === 0) {
+    container.innerHTML = '<div class="empty-state" id="empty-state"><h3>No months added yet</h3><p>Click "Add Month" to start tracking your finances</p></div>';
+    document.getElementById('pagination').style.display = 'none';
     return;
   }
   
   document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('pagination').style.display = 'flex';
   
-  monthsData.forEach(monthData => {
-    const monthEl = createMonthElement(monthData);
-    monthsContainer.appendChild(monthEl);
-  });
+  // Clear container
+  container.innerHTML = '';
+  
+  // Render current month
+  const monthData = monthsData[currentMonthIndex];
+  const monthEl = createMonthElement(monthData);
+  monthEl.classList.add('active');
+  container.appendChild(monthEl);
   
   renderMethodDropdowns();
   updateAll();
+  updatePagination();
 }
 
 function createMonthElement(monthData) {
@@ -1045,9 +1279,9 @@ function createMonthElement(monthData) {
     <div class="month-header">
       <input type="text" class="month-name" value="${monthData.name || 'New Month'}" oninput="saveAll()">
       <div class="month-actions">
-        <button class="warning" onclick="clearMonth('${div.id}')">🗑️ Clear</button>
-        <button class="secondary" onclick="exportMonthCSV('${div.id}')">📊 CSV</button>
-        <button class="danger" onclick="deleteMonth('${div.id}')">🗑️ Delete</button>
+        <button class="warning" onclick="clearMonth(${currentMonthIndex})">🗑️ Clear</button>
+        <button class="secondary" onclick="exportMonthCSV(${currentMonthIndex})">📊 CSV</button>
+        <button class="danger" onclick="deleteMonth(${currentMonthIndex})">🗑️ Delete</button>
       </div>
     </div>
     
@@ -1102,6 +1336,7 @@ function createMonthElement(monthData) {
         </table>
       </div>
       <button class="secondary" onclick="addOverdraftRow(this)" style="margin-top: 8px;">+ Add Entry</button>
+      <span class="help-text">For Overdraft: Current Balance = current amount, Outstanding = remaining, Limit = max allowed</span>
     </div>
     
     <div class="summary">
@@ -1121,6 +1356,75 @@ function createMonthElement(monthData) {
   `;
   
   return div;
+}
+
+// Pagination Functions
+function updatePagination() {
+  const pageInfo = document.getElementById('page-info');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  
+  pageInfo.textContent = `Month ${currentMonthIndex + 1} of ${monthsData.length}`;
+  prevBtn.disabled = currentMonthIndex === 0;
+  nextBtn.disabled = currentMonthIndex === monthsData.length - 1;
+}
+
+function prevMonth() {
+  if (currentMonthIndex > 0) {
+    saveCurrentMonthData();
+    currentMonthIndex--;
+    renderCurrentMonth();
+  }
+}
+
+function nextMonth() {
+  if (currentMonthIndex < monthsData.length - 1) {
+    saveCurrentMonthData();
+    currentMonthIndex++;
+    renderCurrentMonth();
+  }
+}
+
+function saveCurrentMonthData() {
+  // Save current month data before switching
+  const monthEl = document.querySelector('.month-section.active');
+  if (monthEl && monthsData[currentMonthIndex]) {
+    const monthData = {
+      id: monthEl.id,
+      name: monthEl.querySelector('.month-name').value,
+      coreBills: [],
+      overdraftEntries: []
+    };
+    
+    // Get core bills
+    monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
+      monthData.coreBills.push({
+        date: row.querySelector('.date-input')?.value || '',
+        method: row.querySelector('.payment-method')?.value || '',
+        company: row.querySelector('.company-input')?.value || '',
+        amount: row.querySelector('.amount-input')?.value || '0',
+        type: row.querySelector('.type-select')?.value || '',
+        paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+      });
+    });
+    
+    // Get overdraft entries
+    monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
+      monthData.overdraftEntries.push({
+        date: row.querySelector('.date-input')?.value || '',
+        method: row.querySelector('.payment-method')?.value || '',
+        company: row.querySelector('.company-input')?.value || '',
+        amount: row.querySelector('.amount-input')?.value || '0',
+        type: row.querySelector('.type-select')?.value || '',
+        currentBalance: row.querySelector('.current-balance')?.value || '',
+        outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
+        limit: row.querySelector('.limit-input')?.value || '',
+        paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+      });
+    });
+    
+    monthsData[currentMonthIndex] = monthData;
+  }
 }
 
 // Row Operations
@@ -1150,6 +1454,8 @@ function deleteRow(button) {
 
 // Month Operations
 function addMonth() {
+  saveCurrentMonthData();
+  
   const monthId = 'month-' + Date.now();
   const monthName = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   
@@ -1160,51 +1466,48 @@ function addMonth() {
     overdraftEntries: []
   };
   
-  const monthEl = createMonthElement(newMonth);
-  document.getElementById('months').appendChild(monthEl);
+  monthsData.push(newMonth);
+  currentMonthIndex = monthsData.length - 1;
+  
+  renderCurrentMonth();
   document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('pagination').style.display = 'flex';
   
   renderMethodDropdowns();
   saveAll();
   showNotification('Month added successfully', 'success');
 }
 
-function clearMonth(monthId) {
+function clearMonth(index) {
   if (confirm('Clear all data in this month? This cannot be undone.')) {
-    const monthEl = document.getElementById(monthId);
-    if (monthEl) {
-      // Clear core bills (keep one empty row)
-      const coreTbody = monthEl.querySelector('#core-bills-table tbody');
-      if (coreTbody && coreTbody.children.length > 1) {
-        coreTbody.innerHTML = getCoreBillsRow();
-      }
-      
-      // Clear overdraft entries (keep one empty row)
-      const overdraftTbody = monthEl.querySelector('#overdraft-table tbody');
-      if (overdraftTbody && overdraftTbody.children.length > 1) {
-        overdraftTbody.innerHTML = getOverdraftRow();
-      }
-      
-      renderMethodDropdowns();
+    if (monthsData[index]) {
+      monthsData[index].coreBills = [];
+      monthsData[index].overdraftEntries = [];
+      renderCurrentMonth();
       saveAll();
       showNotification('Month cleared', 'success');
     }
   }
 }
 
-function deleteMonth(monthId) {
+function deleteMonth(index) {
   if (confirm('Delete this entire month? This cannot be undone.')) {
-    const monthEl = document.getElementById(monthId);
-    if (monthEl) {
-      monthEl.remove();
-      
-      if (!document.querySelector('.month-section')) {
-        document.getElementById('empty-state').style.display = 'block';
-      }
-      
-      saveAll();
-      showNotification('Month deleted', 'success');
+    monthsData.splice(index, 1);
+    
+    if (currentMonthIndex >= monthsData.length) {
+      currentMonthIndex = Math.max(0, monthsData.length - 1);
     }
+    
+    if (monthsData.length === 0) {
+      document.getElementById('empty-state').style.display = 'block';
+      document.getElementById('pagination').style.display = 'none';
+      document.getElementById('months-container').innerHTML = '<div class="empty-state" id="empty-state"><h3>No months added yet</h3><p>Click "Add Month" to start tracking your finances</p></div>';
+    } else {
+      renderCurrentMonth();
+    }
+    
+    saveAll();
+    showNotification('Month deleted', 'success');
   }
 }
 
@@ -1242,9 +1545,346 @@ function calculateMonthTotals(month) {
 }
 
 function updateAll() {
-  document.querySelectorAll('.month-section').forEach(month => {
-    calculateMonthTotals(month);
+  const monthEl = document.querySelector('.month-section.active');
+  if (monthEl) {
+    calculateMonthTotals(monthEl);
+  }
+}
+
+// Page Navigation
+function showPage(page) {
+  const homeBtn = document.getElementById('nav-home');
+  const reportsBtn = document.getElementById('nav-reports');
+  const homePage = document.getElementById('home-page');
+  const reportsPage = document.getElementById('reports-page');
+  
+  if (page === 'home') {
+    homeBtn.classList.add('active');
+    reportsBtn.classList.remove('active');
+    homePage.style.display = 'block';
+    reportsPage.classList.remove('active');
+  } else if (page === 'reports') {
+    homeBtn.classList.remove('active');
+    reportsBtn.classList.add('active');
+    homePage.style.display = 'none';
+    reportsPage.classList.add('active');
+  }
+}
+
+// Reports Functions
+function showMonthlySummaryReport() {
+  if (monthsData.length === 0) {
+    showNotification('No data available for reports', 'error');
+    return;
+  }
+  
+  const modalHTML = `
+    <div class="modal reports-modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">←</button>
+        <h3>📊 Monthly Summary Report</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      </div>
+      <div class="modal-content">
+        ${generateMonthlySummaryHTML()}
+      </div>
+      <div class="modal-footer">
+        <button class="success" onclick="exportPDF()">Export PDF</button>
+        <button onclick="this.closest('.modal-overlay').remove()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = modalHTML;
+  document.body.appendChild(overlay);
+}
+
+function generateMonthlySummaryHTML() {
+  let html = '';
+  const salary = parseFloat(document.getElementById('salary').value) || 0;
+  
+  monthsData.forEach((month, index) => {
+    // Calculate totals for this month
+    let coreTotal = 0;
+    let overdraftTotal = 0;
+    
+    month.coreBills.forEach(bill => {
+      coreTotal += parseFloat(bill.amount || 0);
+    });
+    
+    month.overdraftEntries.forEach(entry => {
+      overdraftTotal += parseFloat(entry.amount || 0);
+    });
+    
+    const remaining = salary - coreTotal - overdraftTotal;
+    
+    html += `
+      <div class="report-section">
+        <h4>${month.name}</h4>
+        <div class="summary" style="margin: 0;">
+          <div class="summary-item">
+            <span>Core Bills</span>
+            <b>£${coreTotal.toFixed(2)}</b>
+          </div>
+          <div class="summary-item">
+            <span>Overdraft/Debt</span>
+            <b>£${overdraftTotal.toFixed(2)}</b>
+          </div>
+          <div class="summary-item">
+            <span>Remaining</span>
+            <b style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}">
+              £${remaining.toFixed(2)}
+            </b>
+          </div>
+        </div>
+      </div>
+    `;
   });
+  
+  return html;
+}
+
+function showCategoryBreakdown() {
+  if (monthsData.length === 0) {
+    showNotification('No data available for reports', 'error');
+    return;
+  }
+  
+  // Collect all categories and their totals
+  const categories = {};
+  
+  monthsData.forEach(month => {
+    month.coreBills.forEach(bill => {
+      const type = bill.type || 'Uncategorized';
+      const amount = parseFloat(bill.amount || 0);
+      categories[type] = (categories[type] || 0) + amount;
+    });
+  });
+  
+  const modalHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">←</button>
+        <h3>📈 Category Breakdown</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      </div>
+      <div class="modal-content">
+        ${Object.entries(categories).map(([category, total]) => `
+          <div style="margin-bottom: 10px; padding: 10px; background: var(--soft); border-radius: var(--radius);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span>${category}</span>
+              <b>£${total.toFixed(2)}</b>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="modal-footer">
+        <button onclick="this.closest('.modal-overlay').remove()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = modalHTML;
+  document.body.appendChild(overlay);
+}
+
+function showPaymentMethodAnalysis() {
+  if (monthsData.length === 0) {
+    showNotification('No data available for reports', 'error');
+    return;
+  }
+  
+  const methods = {};
+  
+  monthsData.forEach(month => {
+    month.coreBills.forEach(bill => {
+      const method = bill.method || 'Not specified';
+      const amount = parseFloat(bill.amount || 0);
+      methods[method] = (methods[method] || 0) + amount;
+    });
+    
+    month.overdraftEntries.forEach(entry => {
+      const method = entry.method || 'Not specified';
+      const amount = parseFloat(entry.amount || 0);
+      methods[method] = (methods[method] || 0) + amount;
+    });
+  });
+  
+  const modalHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">←</button>
+        <h3>💳 Payment Method Analysis</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      </div>
+      <div class="modal-content">
+        ${Object.entries(methods)
+          .sort((a, b) => b[1] - a[1])
+          .map(([method, total]) => `
+            <div style="margin-bottom: 10px; padding: 10px; background: var(--soft); border-radius: var(--radius);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>${method}</span>
+                <b>£${total.toFixed(2)}</b>
+              </div>
+            </div>
+          `).join('')}
+      </div>
+      <div class="modal-footer">
+        <button onclick="this.closest('.modal-overlay').remove()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = modalHTML;
+  document.body.appendChild(overlay);
+}
+
+function showDebtOverview() {
+  if (monthsData.length === 0) {
+    showNotification('No data available for reports', 'error');
+    return;
+  }
+  
+  let totalDebt = 0;
+  let totalOverdraft = 0;
+  let totalBNPL = 0;
+  let totalFinance = 0;
+  
+  monthsData.forEach(month => {
+    month.overdraftEntries.forEach(entry => {
+      const amount = parseFloat(entry.amount || 0);
+      const type = entry.type || '';
+      
+      switch(type) {
+        case 'Overdraft':
+          totalOverdraft += amount;
+          break;
+        case 'BNPL':
+          totalBNPL += amount;
+          break;
+        case 'Finance Plan':
+          totalFinance += amount;
+          break;
+        case 'Debt':
+          totalDebt += amount;
+          break;
+      }
+    });
+  });
+  
+  const modalHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">←</button>
+        <h3>📉 Debt & Overdraft Overview</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      </div>
+      <div class="modal-content">
+        <div style="margin-bottom: 15px; padding: 15px; background: var(--soft); border-radius: var(--radius);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span>Total Debt</span>
+            <b style="color: var(--danger)">£${totalDebt.toFixed(2)}</b>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span>Total Overdraft</span>
+            <b style="color: var(--warning)">£${totalOverdraft.toFixed(2)}</b>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span>Total BNPL</span>
+            <b style="color: var(--warning)">£${totalBNPL.toFixed(2)}</b>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Total Finance Plans</span>
+            <b style="color: var(--warning)">£${totalFinance.toFixed(2)}</b>
+          </div>
+        </div>
+        <div class="help-text" style="text-align: center;">
+          Total Outstanding: £${(totalDebt + totalOverdraft + totalBNPL + totalFinance).toFixed(2)}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="this.closest('.modal-overlay').remove()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = modalHTML;
+  document.body.appendChild(overlay);
+}
+
+function showYearlyTrends() {
+  if (monthsData.length === 0) {
+    showNotification('No data available for reports', 'error');
+    return;
+  }
+  
+  // Group by year
+  const years = {};
+  
+  monthsData.forEach(month => {
+    const yearMatch = month.name.match(/\d{4}/);
+    if (yearMatch) {
+      const year = yearMatch[0];
+      if (!years[year]) years[year] = { core: 0, debt: 0, count: 0 };
+      
+      // Calculate totals for this month
+      let coreTotal = 0;
+      let debtTotal = 0;
+      
+      month.coreBills.forEach(bill => {
+        coreTotal += parseFloat(bill.amount || 0);
+      });
+      
+      month.overdraftEntries.forEach(entry => {
+        debtTotal += parseFloat(entry.amount || 0);
+      });
+      
+      years[year].core += coreTotal;
+      years[year].debt += debtTotal;
+      years[year].count++;
+    }
+  });
+  
+  const modalHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">←</button>
+        <h3>📅 Yearly Trends</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      </div>
+      <div class="modal-content">
+        ${Object.entries(years).map(([year, data]) => `
+          <div style="margin-bottom: 15px; padding: 15px; background: var(--soft); border-radius: var(--radius);">
+            <h4 style="margin: 0 0 10px 0;">${year} (${data.count} months)</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span>Average Core Bills:</span>
+              <b>£${(data.core / data.count).toFixed(2)}/month</b>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Average Debt/Overdraft:</span>
+              <b>£${(data.debt / data.count).toFixed(2)}/month</b>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="modal-footer">
+        <button onclick="this.closest('.modal-overlay').remove()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = modalHTML;
+  document.body.appendChild(overlay);
 }
 
 // Dark Mode
@@ -1297,45 +1937,9 @@ function downloadBackup() {
   const data = {
     salary: document.getElementById('salary').value,
     paymentMethods: window.paymentMethods,
-    months: [],
+    months: monthsData,
     exported: new Date().toISOString()
   };
-  
-  // Collect months data
-  document.querySelectorAll('.month-section').forEach(monthEl => {
-    const monthData = {
-      name: monthEl.querySelector('.month-name').value,
-      coreBills: [],
-      overdraftEntries: []
-    };
-    
-    monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-      monthData.coreBills.push({
-        date: row.querySelector('.date-input')?.value || '',
-        method: row.querySelector('.payment-method')?.value || '',
-        company: row.querySelector('.company-input')?.value || '',
-        amount: row.querySelector('.amount-input')?.value || '0',
-        type: row.querySelector('.type-select')?.value || '',
-        paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-      });
-    });
-    
-    monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-      monthData.overdraftEntries.push({
-        date: row.querySelector('.date-input')?.value || '',
-        method: row.querySelector('.payment-method')?.value || '',
-        company: row.querySelector('.company-input')?.value || '',
-        amount: row.querySelector('.amount-input')?.value || '0',
-        type: row.querySelector('.type-select')?.value || '',
-        currentBalance: row.querySelector('.current-balance')?.value || '',
-        outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
-        limit: row.querySelector('.limit-input')?.value || '',
-        paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-      });
-    });
-    
-    data.months.push(monthData);
-  });
   
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1366,7 +1970,7 @@ function restoreBackup() {
       const backup = JSON.parse(e.target.result);
       
       // Validate backup structure
-      if (!backup.salary && !backup.months) {
+      if (!backup.months || !Array.isArray(backup.months)) {
         throw new Error('Invalid backup file format');
       }
       
@@ -1380,15 +1984,11 @@ function restoreBackup() {
           saveMethods();
         }
         
-        // Clear current months
-        document.getElementById('months').innerHTML = '';
-        document.getElementById('empty-state').style.display = 'block';
-        
         // Restore months
-        if (backup.months && backup.months.length > 0) {
-          renderAllMonths(backup.months);
-          document.getElementById('empty-state').style.display = 'none';
-        }
+        monthsData = backup.months;
+        currentMonthIndex = 0;
+        
+        renderCurrentMonth();
         
         saveAll();
         showNotification('Backup restored successfully', 'success');
@@ -1403,26 +2003,24 @@ function restoreBackup() {
 }
 
 // CSV Export
-function exportMonthCSV(monthId) {
-  const month = document.getElementById(monthId);
+function exportMonthCSV(index) {
+  const month = monthsData[index];
   if (!month) return;
   
-  const monthName = month.querySelector('.month-name').value;
   let csv = [];
   
   // Core Bills
   csv.push('Core Bills');
   csv.push('Date,Payment Method,Company,Amount,Payment Type,Paid Status');
-  month.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-    const cells = [
-      row.querySelector('.date-input')?.value || '',
-      row.querySelector('.payment-method')?.value || '',
-      row.querySelector('.company-input')?.value || '',
-      row.querySelector('.amount-input')?.value || '0',
-      row.querySelector('.type-select')?.value || '',
-      row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-    ];
-    csv.push(cells.map(c => `"${c}"`).join(','));
+  month.coreBills.forEach(bill => {
+    csv.push([
+      bill.date,
+      bill.method,
+      bill.company,
+      bill.amount,
+      bill.type,
+      bill.paid
+    ].map(c => `"${c}"`).join(','));
   });
   
   csv.push('', ''); // Empty lines
@@ -1430,28 +2028,26 @@ function exportMonthCSV(monthId) {
   // Overdraft Table
   csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
   csv.push('Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status');
-  month.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-    const cells = [
-      row.querySelector('.date-input')?.value || '',
-      row.querySelector('.payment-method')?.value || '',
-      row.querySelector('.company-input')?.value || '',
-      row.querySelector('.amount-input')?.value || '0',
-      row.querySelector('.type-select')?.value || '',
-      row.querySelector('.current-balance')?.value || '',
-      row.querySelector('.outstanding-balance')?.value || '',
-      row.querySelector('.limit-input')?.value || '',
-      row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-    ];
-    csv.push(cells.map(c => `"${c}"`).join(','));
+  month.overdraftEntries.forEach(entry => {
+    csv.push([
+      entry.date,
+      entry.method,
+      entry.company,
+      entry.amount,
+      entry.type,
+      entry.currentBalance,
+      entry.outstandingBalance,
+      entry.limit,
+      entry.paid
+    ].map(c => `"${c}"`).join(','));
   });
   
-  downloadCSV(csv.join('\n'), `${monthName.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
+  downloadCSV(csv.join('\n'), `${month.name.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
   showNotification('CSV exported successfully', 'success');
 }
 
 function exportAllCSV() {
-  const months = document.querySelectorAll('.month-section');
-  if (months.length === 0) {
+  if (monthsData.length === 0) {
     showNotification('No data to export', 'error');
     return;
   }
@@ -1461,48 +2057,41 @@ function exportAllCSV() {
   csv.push(`Salary: £${document.getElementById('salary').value || '0'}`);
   csv.push('');
   
-  months.forEach(monthEl => {
-    const monthName = monthEl.querySelector('.month-name').value;
-    csv.push(`Month: ${monthName}`);
+  monthsData.forEach(month => {
+    csv.push(`Month: ${month.name}`);
     csv.push('='.repeat(50));
     
-    // Core Bills
-    const hasCoreBills = monthEl.querySelectorAll('#core-bills-table tbody tr').length > 0;
-    if (hasCoreBills) {
+    if (month.coreBills.length > 0) {
       csv.push('Core Bills');
       csv.push('Date,Payment Method,Company,Amount,Payment Type,Paid Status');
-      monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-        const cells = [
-          row.querySelector('.date-input')?.value || '',
-          row.querySelector('.payment-method')?.value || '',
-          row.querySelector('.company-input')?.value || '',
-          row.querySelector('.amount-input')?.value || '0',
-          row.querySelector('.type-select')?.value || '',
-          row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-        ];
-        csv.push(cells.map(c => `"${c}"`).join(','));
+      month.coreBills.forEach(bill => {
+        csv.push([
+          bill.date,
+          bill.method,
+          bill.company,
+          bill.amount,
+          bill.type,
+          bill.paid
+        ].map(c => `"${c}"`).join(','));
       });
       csv.push('');
     }
     
-    // Overdraft Table
-    const hasOverdraft = monthEl.querySelectorAll('#overdraft-table tbody tr').length > 0;
-    if (hasOverdraft) {
+    if (month.overdraftEntries.length > 0) {
       csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
       csv.push('Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status');
-      monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-        const cells = [
-          row.querySelector('.date-input')?.value || '',
-          row.querySelector('.payment-method')?.value || '',
-          row.querySelector('.company-input')?.value || '',
-          row.querySelector('.amount-input')?.value || '0',
-          row.querySelector('.type-select')?.value || '',
-          row.querySelector('.current-balance')?.value || '',
-          row.querySelector('.outstanding-balance')?.value || '',
-          row.querySelector('.limit-input')?.value || '',
-          row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-        ];
-        csv.push(cells.map(c => `"${c}"`).join(','));
+      month.overdraftEntries.forEach(entry => {
+        csv.push([
+          entry.date,
+          entry.method,
+          entry.company,
+          entry.amount,
+          entry.type,
+          entry.currentBalance,
+          entry.outstandingBalance,
+          entry.limit,
+          entry.paid
+        ].map(c => `"${c}"`).join(','));
       });
     }
     
@@ -1527,8 +2116,7 @@ function downloadCSV(data, filename) {
 
 // PDF Export
 function exportPDF() {
-  const months = document.querySelectorAll('.month-section');
-  if (months.length === 0) {
+  if (monthsData.length === 0) {
     showNotification('No data to export', 'error');
     return;
   }
@@ -1549,13 +2137,13 @@ function exportPDF() {
   let yPos = 45;
   
   // Process each month
-  months.forEach((monthEl, index) => {
+  monthsData.forEach((month, index) => {
     if (index > 0) {
       doc.addPage();
       yPos = 20;
     }
     
-    const monthName = monthEl.querySelector('.month-name').value;
+    const monthName = month.name;
     
     // Month Header
     doc.setFontSize(16);
@@ -1565,15 +2153,9 @@ function exportPDF() {
     
     // Core Bills Table
     const coreRows = [];
-    monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-      const date = row.querySelector('.date-input')?.value || '';
-      const company = row.querySelector('.company-input')?.value || '';
-      const amount = row.querySelector('.amount-input')?.value || '0';
-      const type = row.querySelector('.type-select')?.value || '';
-      const paid = row.querySelector('input[name="paid"]:checked')?.value || 'not-paid';
-      
-      if (date || company || amount !== '0') {
-        coreRows.push([date, company, '£' + parseFloat(amount).toFixed(2), type, paid === 'paid' ? '✓' : '✗']);
+    month.coreBills.forEach(bill => {
+      if (bill.date || bill.company || bill.amount !== '0') {
+        coreRows.push([bill.date, bill.company, '£' + parseFloat(bill.amount).toFixed(2), bill.type, bill.paid === 'paid' ? '✓' : '✗']);
       }
     });
     
@@ -1596,26 +2178,17 @@ function exportPDF() {
     
     // Overdraft Table
     const overdraftRows = [];
-    monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-      const date = row.querySelector('.date-input')?.value || '';
-      const company = row.querySelector('.company-input')?.value || '';
-      const amount = row.querySelector('.amount-input')?.value || '0';
-      const type = row.querySelector('.type-select')?.value || '';
-      const current = row.querySelector('.current-balance')?.value || '';
-      const outstanding = row.querySelector('.outstanding-balance')?.value || '';
-      const limit = row.querySelector('.limit-input')?.value || '';
-      const paid = row.querySelector('input[name="paid"]:checked')?.value || 'not-paid';
-      
-      if (date || company || amount !== '0' || current || outstanding || limit) {
+    month.overdraftEntries.forEach(entry => {
+      if (entry.date || entry.company || entry.amount !== '0' || entry.currentBalance || entry.outstandingBalance || entry.limit) {
         overdraftRows.push([
-          date,
-          company,
-          '£' + parseFloat(amount).toFixed(2),
-          type,
-          current ? '£' + parseFloat(current).toFixed(2) : '',
-          outstanding ? '£' + parseFloat(outstanding).toFixed(2) : '',
-          limit ? '£' + parseFloat(limit).toFixed(2) : '',
-          paid === 'paid' ? '✓' : '✗'
+          entry.date,
+          entry.company,
+          '£' + parseFloat(entry.amount).toFixed(2),
+          entry.type,
+          entry.currentBalance ? '£' + parseFloat(entry.currentBalance).toFixed(2) : '',
+          entry.outstandingBalance ? '£' + parseFloat(entry.outstandingBalance).toFixed(2) : '',
+          entry.limit ? '£' + parseFloat(entry.limit).toFixed(2) : '',
+          entry.paid === 'paid' ? '✓' : '✗'
         ]);
       }
     });
@@ -1637,8 +2210,8 @@ function exportPDF() {
     }
     
     // Calculate totals
-    const coreTotal = coreRows.reduce((sum, row) => sum + parseFloat(row[2].replace('£', '') || 0), 0);
-    const overdraftTotal = overdraftRows.reduce((sum, row) => sum + parseFloat(row[2].replace('£', '') || 0), 0);
+    const coreTotal = month.coreBills.reduce((sum, bill) => sum + parseFloat(bill.amount || 0), 0);
+    const overdraftTotal = month.overdraftEntries.reduce((sum, entry) => sum + parseFloat(entry.amount || 0), 0);
     const salary = parseFloat(document.getElementById('salary').value) || 0;
     const remaining = salary - coreTotal - overdraftTotal;
     
@@ -1680,6 +2253,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeMethodsManager();
     document.querySelector('.modal-overlay')?.remove();
+  }
+  // Arrow keys for pagination
+  if (e.key === 'ArrowLeft') {
+    prevMonth();
+  } else if (e.key === 'ArrowRight') {
+    nextMonth();
   }
 });
 </script>
