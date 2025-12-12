@@ -22,6 +22,9 @@
   --accent: #2563eb;
   --soft: #e7f0ff;
   --radius: 8px;
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
 }
 body.dark {
   --bg: #0d1117;
@@ -30,40 +33,43 @@ body.dark {
   --line: #30363d;
   --soft: #1f2937;
 }
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
+  font-size: 14px;
 }
 .page {
   max-width: 1200px;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 0 auto;
+  padding: 16px;
   background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-.dark .page {
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  min-height: 100vh;
 }
 
 /* Header */
 .header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--line);
+  position: relative;
 }
 h1 {
   margin: 0 0 8px 0;
   font-weight: 600;
+  font-size: 24px;
 }
 .subtitle {
   color: var(--text);
   opacity: 0.7;
   margin: 0;
+  font-size: 14px;
 }
 
 /* Controls */
@@ -78,24 +84,35 @@ button {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 button:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+}
+button:active {
+  transform: translateY(0);
 }
 button.secondary {
   background: #4b5563;
 }
 button.danger {
-  background: #dc2626;
+  background: var(--danger);
 }
 button.success {
-  background: #059669;
+  background: var(--success);
+}
+button.warning {
+  background: var(--warning);
 }
 
 /* Salary Input */
@@ -103,43 +120,57 @@ button.success {
   background: var(--soft);
   padding: 16px;
   border-radius: var(--radius);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .salary-input label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
+  font-size: 15px;
 }
 .salary-input input {
-  width: 200px;
-  padding: 8px 12px;
+  width: 100%;
+  max-width: 300px;
+  padding: 10px 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--text);
   font-size: 16px;
 }
+.salary-input input:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
 
 /* Month Sections */
 .month-section {
   background: var(--bg);
   border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 24px;
+  padding: 16px;
+  margin-bottom: 20px;
   border: 1px solid var(--line);
 }
 .month-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 20px;
-  padding-bottom: 12px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--line);
+}
+@media (min-width: 768px) {
+  .month-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 .month-header h2 {
   margin: 0;
   font-weight: 600;
   font-size: 20px;
+  flex: 1;
 }
 .month-header input {
   font-size: 20px;
@@ -147,13 +178,19 @@ button.success {
   background: transparent;
   border: none;
   color: var(--text);
-  padding: 4px 8px;
+  padding: 8px;
   border-radius: 4px;
-  width: 200px;
+  width: 100%;
+  max-width: 300px;
 }
 .month-header input:focus {
   outline: 2px solid var(--accent);
   background: var(--card);
+}
+.month-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* Tables */
@@ -166,16 +203,21 @@ button.success {
   font-size: 16px;
   color: var(--text);
   opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .table-container {
   overflow-x: auto;
   border-radius: var(--radius);
   border: 1px solid var(--line);
+  margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
 }
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1000px;
+  min-width: 800px;
 }
 thead {
   background: var(--soft);
@@ -190,11 +232,13 @@ th {
   color: var(--text);
   opacity: 0.7;
   border-bottom: 1px solid var(--line);
+  white-space: nowrap;
 }
 td {
   padding: 12px 8px;
   border-bottom: 1px solid var(--line);
   background: var(--card);
+  vertical-align: middle;
 }
 tbody tr:hover td {
   background: var(--soft);
@@ -206,13 +250,14 @@ tbody tr:last-child td {
 /* Form Elements */
 input, select {
   width: 100%;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--text);
   font-size: 14px;
   box-sizing: border-box;
+  min-height: 40px;
 }
 input:focus, select:focus {
   outline: 2px solid var(--accent);
@@ -221,46 +266,61 @@ input:focus, select:focus {
 .radio-group {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 .radio-group label {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   cursor: pointer;
   font-size: 14px;
+  white-space: nowrap;
 }
 input[type="radio"] {
   width: auto;
   margin: 0;
+  min-height: auto;
 }
 
 /* Paid Status */
 .paid-status {
-  display: flex;
+  min-width: 120px;
+}
+.status-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
 }
 .status-paid {
-  color: #059669;
-  font-weight: 500;
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--success);
 }
 .status-not-paid {
-  color: #dc2626;
-  font-weight: 500;
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--danger);
 }
 
 /* Actions */
 .actions {
   white-space: nowrap;
+  min-width: 60px;
 }
 .delete-btn {
   background: none;
   border: none;
-  color: #dc2626;
+  color: var(--danger);
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 8px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
 }
 .delete-btn:hover {
   background: rgba(220, 38, 38, 0.1);
@@ -270,25 +330,26 @@ input[type="radio"] {
 .summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 12px;
   margin-top: 24px;
-  padding-top: 16px;
+  padding-top: 20px;
   border-top: 1px solid var(--line);
 }
 .summary-item {
   background: var(--soft);
-  padding: 12px;
+  padding: 16px;
   border-radius: var(--radius);
   text-align: center;
 }
 .summary-item span {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.7;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 .summary-item b {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
 }
 
@@ -301,15 +362,185 @@ input[type="radio"] {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* Utility */
-.hidden {
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+.modal {
+  background: var(--card);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.modal-header h3 {
+  margin: 0;
+  flex: 1;
+  font-size: 18px;
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 20px;
+}
+.modal-close:hover {
+  background: var(--soft);
+}
+.modal-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Methods Manager */
+.methods-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.method-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  background: var(--soft);
+}
+.method-item input {
+  flex: 1;
+  margin: 0;
+}
+.add-method-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.add-method-form input {
+  flex: 1;
+  margin: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .page {
+    padding: 12px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .controls button {
+    width: 100%;
+    justify-content: center;
+  }
+  .salary-input input {
+    max-width: 100%;
+  }
+  .month-actions {
+    width: 100%;
+  }
+  .month-actions button {
+    flex: 1;
+    min-width: 0;
+  }
+  table {
+    font-size: 13px;
+  }
+  th, td {
+    padding: 10px 6px;
+  }
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loading Indicator */
+.loading {
   display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--text);
+}
+.loading.active {
+  display: flex;
+}
+
+/* Last Saved Indicator */
+.last-saved {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-left: auto;
+  padding: 4px 8px;
+  background: var(--soft);
+  border-radius: 4px;
+  display: none;
+}
+@media (min-width: 768px) {
+  .last-saved {
+    display: block;
+  }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text);
+  opacity: 0.6;
+}
+.empty-state p {
+  margin: 8px 0;
 }
 </style>
 </head>
@@ -317,6 +548,8 @@ input[type="radio"] {
 <body>
 
 <button class="dark-toggle" onclick="toggleDarkMode()">🌙 Dark</button>
+
+<div class="loading" id="loading">Loading your data...</div>
 
 <div class="page">
   <div class="header">
@@ -326,85 +559,287 @@ input[type="radio"] {
 
   <div class="salary-input">
     <label for="salary">Monthly Salary (£)</label>
-    <input id="salary" type="number" value="0" min="0" step="0.01" oninput="saveAll()">
+    <input id="salary" type="number" value="0" min="0" step="0.01" oninput="saveAll()" placeholder="Enter your monthly salary">
   </div>
 
   <div class="controls">
-    <button onclick="addMonth()">+ Add Month</button>
-    <button class="secondary" onclick="exportPDF()">📄 Export PDF</button>
+    <button onclick="addMonth()">📅 Add Month</button>
+    <button class="success" onclick="exportPDF()">📄 Export PDF</button>
     <button class="secondary" onclick="exportAllCSV()">📊 Export All CSV</button>
-    <div style="flex-grow: 1;"></div>
-    <span id="last-saved"></span>
+    <div class="last-saved" id="last-saved">Ready</div>
   </div>
 
-  <div id="months"></div>
+  <div id="months">
+    <div class="empty-state" id="empty-state">
+      <h3>No months added yet</h3>
+      <p>Click "Add Month" to start tracking your finances</p>
+    </div>
+  </div>
 </div>
 
 <script>
 // Global variables
 window.jsPDF = window.jspdf.jsPDF;
-let methods = JSON.parse(localStorage.getItem("methods")) || [
-  "Cash", "Debit Card", "Credit Card", "Bank Transfer", "Direct Debit",
-  "Standing Order", "PayPal", "Apple Pay", "Google Pay", "Other"
-];
+let methods = [];
+let appData = { months: [] };
 
-// Payment Methods Management
-function saveMethods() {
-  localStorage.setItem("methods", JSON.stringify(methods));
+// Initialize app
+async function initApp() {
+  showLoading(true);
+  
+  try {
+    // Load methods
+    const savedMethods = localStorage.getItem('financialTracker_methods');
+    methods = savedMethods ? JSON.parse(savedMethods) : [
+      "Cash", "Debit Card", "Credit Card", "Bank Transfer", "Direct Debit",
+      "Standing Order", "PayPal", "Apple Pay", "Google Pay", "Other"
+    ];
+    
+    // Load app data
+    const savedData = localStorage.getItem('financialTracker_data');
+    if (savedData) {
+      appData = JSON.parse(savedData);
+      
+      // Restore salary
+      if (appData.salary !== undefined) {
+        document.getElementById('salary').value = appData.salary;
+      }
+      
+      // Restore months
+      if (appData.months && appData.months.length > 0) {
+        renderAllMonths();
+        document.getElementById('empty-state').style.display = 'none';
+      }
+    }
+    
+    // Restore dark mode
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark');
+      document.querySelector('.dark-toggle').textContent = '☀️ Light';
+    }
+    
+    updateLastSaved('Data loaded');
+    
+  } catch (error) {
+    console.error('Error loading data:', error);
+    alert('Error loading saved data. Starting fresh.');
+    // Initialize with default data
+    methods = [
+      "Cash", "Debit Card", "Credit Card", "Bank Transfer", "Direct Debit",
+      "Standing Order", "PayPal", "Apple Pay", "Google Pay", "Other"
+    ];
+    saveMethods();
+  } finally {
+    showLoading(false);
+  }
 }
 
+// Show/hide loading indicator
+function showLoading(show) {
+  document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+
+// Save methods to localStorage
+function saveMethods() {
+  localStorage.setItem('financialTracker_methods', JSON.stringify(methods));
+}
+
+// Save all app data to localStorage
+function saveAll() {
+  try {
+    // Collect current state
+    const salary = document.getElementById('salary').value;
+    const months = [];
+    
+    // Collect data from each month
+    document.querySelectorAll('.month-section').forEach(monthEl => {
+      const month = {
+        id: monthEl.id,
+        name: monthEl.querySelector('.month-name').value,
+        salary: salary,
+        coreBills: [],
+        overdraftEntries: []
+      };
+      
+      // Core bills
+      monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
+        month.coreBills.push({
+          date: row.querySelector('.date-input')?.value || '',
+          method: row.querySelector('.payment-method')?.value || '',
+          company: row.querySelector('.company-input')?.value || '',
+          amount: row.querySelector('.amount-input')?.value || '0',
+          type: row.querySelector('.type-select')?.value || '',
+          paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+        });
+      });
+      
+      // Overdraft entries
+      monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
+        month.overdraftEntries.push({
+          date: row.querySelector('.date-input')?.value || '',
+          method: row.querySelector('.payment-method')?.value || '',
+          company: row.querySelector('.company-input')?.value || '',
+          amount: row.querySelector('.amount-input')?.value || '0',
+          type: row.querySelector('.type-select')?.value || '',
+          currentBalance: row.querySelector('.current-balance')?.value || '',
+          outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
+          limit: row.querySelector('.limit-input')?.value || '',
+          paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
+        });
+      });
+      
+      months.push(month);
+    });
+    
+    // Update appData
+    appData = {
+      salary: salary,
+      months: months,
+      lastSaved: new Date().toISOString()
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('financialTracker_data', JSON.stringify(appData));
+    
+    updateAll();
+    updateLastSaved();
+    
+  } catch (error) {
+    console.error('Error saving data:', error);
+    updateLastSaved('Error saving');
+  }
+}
+
+// Update last saved indicator
+function updateLastSaved(message) {
+  const el = document.getElementById('last-saved');
+  if (message) {
+    el.textContent = message;
+  } else {
+    const now = new Date();
+    el.textContent = `Saved: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+  }
+}
+
+// Payment Methods Manager Modal
+let methodsManagerModal = null;
+
 function showMethodsManager() {
-  const html = `
-    <div style="padding:20px">
-      <h3>Manage Payment Methods</h3>
-      <div id="methods-list" style="margin:10px 0">
-        ${methods.map((m, i) => `
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <input value="${m}" onchange="updateMethod(${i}, this.value)" style="flex:1">
-            <button onclick="removeMethod(${i})" class="danger">Remove</button>
-          </div>
-        `).join('')}
+  if (methodsManagerModal) {
+    methodsManagerModal.remove();
+  }
+  
+  const modalHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="closeMethodsManager()">←</button>
+        <h3>Manage Payment Methods</h3>
+        <button class="modal-close" onclick="closeMethodsManager()">×</button>
       </div>
-      <div style="display:flex;gap:8px">
-        <input id="new-method" placeholder="New method name" style="flex:1">
-        <button onclick="addNewMethod()" class="success">Add</button>
+      <div class="modal-content">
+        <p style="margin-top: 0; opacity: 0.7; font-size: 14px;">Add, edit, or remove payment methods</p>
+        
+        <div id="methods-list-container">
+          ${methods.map((method, index) => `
+            <div class="method-item" data-index="${index}">
+              <input type="text" value="${method}" 
+                oninput="updateMethod(${index}, this.value)"
+                placeholder="Payment method name">
+              <button class="delete-btn" onclick="removeMethod(${index})" style="font-size: 14px;">Remove</button>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="add-method-form">
+          <input type="text" id="new-method-input" placeholder="New payment method" onkeypress="if(event.key==='Enter') addNewMethod()">
+          <button class="success" onclick="addNewMethod()">Add</button>
+        </div>
       </div>
-      <div style="margin-top:20px">
-        <button onclick="this.closest('div').style.display='none'">Close</button>
+      <div class="modal-footer">
+        <button onclick="closeMethodsManager()">Close</button>
+        <button class="success" onclick="saveMethodsAndClose()">Save & Close</button>
       </div>
     </div>
   `;
   
-  const div = document.createElement('div');
-  div.style.cssText = `
-    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-    background:var(--card);border:1px solid var(--line);border-radius:8px;
-    z-index:1000;min-width:300px;max-width:90vw;
-  `;
-  div.innerHTML = html;
-  document.body.appendChild(div);
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = modalHTML;
+  overlay.onclick = (e) => {
+    if (e.target === overlay) {
+      closeMethodsManager();
+    }
+  };
+  
+  document.body.appendChild(overlay);
+  methodsManagerModal = overlay;
+  
+  // Focus on new method input
+  setTimeout(() => {
+    document.getElementById('new-method-input')?.focus();
+  }, 100);
+}
+
+function closeMethodsManager() {
+  if (methodsManagerModal) {
+    methodsManagerModal.remove();
+    methodsManagerModal = null;
+  }
+}
+
+function saveMethodsAndClose() {
+  saveMethods();
+  renderMethodDropdowns();
+  closeMethodsManager();
+  saveAll();
 }
 
 function updateMethod(index, value) {
   methods[index] = value.trim();
-  saveMethods();
-  renderMethodDropdowns();
 }
 
 function removeMethod(index) {
-  methods.splice(index, 1);
-  saveMethods();
-  showMethodsManager();
+  if (methods.length > 1) {
+    methods.splice(index, 1);
+    const container = document.getElementById('methods-list-container');
+    if (container) {
+      container.innerHTML = methods.map((method, idx) => `
+        <div class="method-item" data-index="${idx}">
+          <input type="text" value="${method}" 
+            oninput="updateMethod(${idx}, this.value)"
+            placeholder="Payment method name">
+          <button class="delete-btn" onclick="removeMethod(${idx})" style="font-size: 14px;">Remove</button>
+        </div>
+      `).join('');
+    }
+  } else {
+    alert('You must have at least one payment method.');
+  }
 }
 
 function addNewMethod() {
-  const input = document.getElementById('new-method');
+  const input = document.getElementById('new-method-input');
   const value = input.value.trim();
-  if (value && !methods.includes(value)) {
-    methods.push(value);
-    saveMethods();
-    input.value = '';
-    showMethodsManager();
+  
+  if (value) {
+    if (!methods.includes(value)) {
+      methods.push(value);
+      const container = document.getElementById('methods-list-container');
+      if (container) {
+        container.innerHTML += `
+          <div class="method-item" data-index="${methods.length - 1}">
+            <input type="text" value="${value}" 
+              oninput="updateMethod(${methods.length - 1}, this.value)"
+              placeholder="Payment method name">
+            <button class="delete-btn" onclick="removeMethod(${methods.length - 1})" style="font-size: 14px;">Remove</button>
+          </div>
+        `;
+      }
+      input.value = '';
+      input.focus();
+    } else {
+      alert('This method already exists.');
+    }
   }
 }
 
@@ -433,79 +868,113 @@ function handleMethodChange(select) {
   if (select.value === '__manage') {
     showMethodsManager();
     select.value = '';
+  } else {
+    saveAll();
   }
-  saveAll();
 }
 
 // Row Templates
-function getCoreBillsRow() {
+function getCoreBillsRow(data = {}) {
   return `
     <tr>
-      <td><input type="date" class="date-input"></td>
-      <td>${getMethodSelect()}</td>
-      <td><input type="text" class="company-input" placeholder="Company"></td>
-      <td><input type="number" step="0.01" value="0" class="amount-input"></td>
+      <td><input type="date" class="date-input" value="${data.date || ''}" oninput="saveAll()"></td>
+      <td>${getMethodSelect(data.method)}</td>
+      <td><input type="text" class="company-input" value="${data.company || ''}" placeholder="Company" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${data.amount || '0'}" class="amount-input" oninput="saveAll()"></td>
       <td>
-        <select class="type-select">
+        <select class="type-select" onchange="saveAll()">
           <option value=""></option>
-          <option value="Utility">Utility</option>
-          <option value="Rent/Mortgage">Rent/Mortgage</option>
-          <option value="Insurance">Insurance</option>
-          <option value="Subscription">Subscription</option>
-          <option value="Loan">Loan</option>
-          <option value="Other">Other</option>
+          <option value="Utility" ${data.type === 'Utility' ? 'selected' : ''}>Utility</option>
+          <option value="Rent/Mortgage" ${data.type === 'Rent/Mortgage' ? 'selected' : ''}>Rent/Mortgage</option>
+          <option value="Insurance" ${data.type === 'Insurance' ? 'selected' : ''}>Insurance</option>
+          <option value="Subscription" ${data.type === 'Subscription' ? 'selected' : ''}>Subscription</option>
+          <option value="Loan" ${data.type === 'Loan' ? 'selected' : ''}>Loan</option>
+          <option value="Other" ${data.type === 'Other' ? 'selected' : ''}>Other</option>
         </select>
       </td>
       <td class="paid-status">
         <div class="radio-group">
-          <label><input type="radio" name="paid" value="paid"> Paid</label>
-          <label><input type="radio" name="paid" value="not-paid" checked> Not Paid</label>
+          <label><input type="radio" name="paid" value="paid" ${data.paid === 'paid' ? 'checked' : ''} onchange="saveAll()"> Paid</label>
+          <label><input type="radio" name="paid" value="not-paid" ${data.paid !== 'paid' ? 'checked' : ''} onchange="saveAll()"> Not Paid</label>
         </div>
       </td>
       <td class="actions">
-        <button class="delete-btn" onclick="deleteRow(this)">✕</button>
+        <button class="delete-btn" onclick="deleteRow(this)" title="Delete row">✕</button>
       </td>
     </tr>
   `;
 }
 
-function getOverdraftRow() {
+function getOverdraftRow(data = {}) {
   return `
     <tr>
-      <td><input type="date" class="date-input"></td>
-      <td>${getMethodSelect()}</td>
-      <td><input type="text" class="company-input" placeholder="Bank/Company"></td>
-      <td><input type="number" step="0.01" value="0" class="amount-input"></td>
+      <td><input type="date" class="date-input" value="${data.date || ''}" oninput="saveAll()"></td>
+      <td>${getMethodSelect(data.method)}</td>
+      <td><input type="text" class="company-input" value="${data.company || ''}" placeholder="Bank/Company" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${data.amount || '0'}" class="amount-input" oninput="saveAll()"></td>
       <td>
-        <select class="type-select">
+        <select class="type-select" onchange="saveAll()">
           <option value=""></option>
-          <option value="Overdraft">Overdraft</option>
-          <option value="BNPL">BNPL</option>
-          <option value="Finance Plan">Finance Plan</option>
-          <option value="Debt">Debt</option>
+          <option value="Overdraft" ${data.type === 'Overdraft' ? 'selected' : ''}>Overdraft</option>
+          <option value="BNPL" ${data.type === 'BNPL' ? 'selected' : ''}>BNPL</option>
+          <option value="Finance Plan" ${data.type === 'Finance Plan' ? 'selected' : ''}>Finance Plan</option>
+          <option value="Debt" ${data.type === 'Debt' ? 'selected' : ''}>Debt</option>
         </select>
       </td>
-      <td><input type="number" step="0.01" placeholder="Current Balance" class="current-balance"></td>
-      <td><input type="number" step="0.01" placeholder="Outstanding Balance" class="outstanding-balance"></td>
-      <td><input type="number" step="0.01" placeholder="Limit" class="limit-input"></td>
+      <td><input type="number" step="0.01" value="${data.currentBalance || ''}" class="current-balance" placeholder="Current Balance" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${data.outstandingBalance || ''}" class="outstanding-balance" placeholder="Outstanding Balance" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${data.limit || ''}" class="limit-input" placeholder="Limit" oninput="saveAll()"></td>
       <td class="paid-status">
         <div class="radio-group">
-          <label><input type="radio" name="paid" value="paid"> Paid</label>
-          <label><input type="radio" name="paid" value="not-paid" checked> Not Paid</label>
+          <label><input type="radio" name="paid" value="paid" ${data.paid === 'paid' ? 'checked' : ''} onchange="saveAll()"> Paid</label>
+          <label><input type="radio" name="paid" value="not-paid" ${data.paid !== 'paid' ? 'checked' : ''} onchange="saveAll()"> Not Paid</label>
         </div>
       </td>
       <td class="actions">
-        <button class="delete-btn" onclick="deleteRow(this)">✕</button>
+        <button class="delete-btn" onclick="deleteRow(this)" title="Delete row">✕</button>
       </td>
     </tr>
   `;
 }
 
-// Table Sections
-function getCoreBillsTable() {
-  return `
+// Month Rendering
+function renderAllMonths() {
+  const monthsContainer = document.getElementById('months');
+  monthsContainer.innerHTML = '';
+  
+  if (appData.months.length === 0) {
+    document.getElementById('empty-state').style.display = 'block';
+    return;
+  }
+  
+  document.getElementById('empty-state').style.display = 'none';
+  
+  appData.months.forEach(monthData => {
+    const monthEl = createMonthElement(monthData);
+    monthsContainer.appendChild(monthEl);
+  });
+  
+  renderMethodDropdowns();
+  updateAll();
+}
+
+function createMonthElement(monthData) {
+  const div = document.createElement('div');
+  div.className = 'month-section';
+  div.id = monthData.id || 'month-' + Date.now();
+  
+  div.innerHTML = `
+    <div class="month-header">
+      <input type="text" class="month-name" value="${monthData.name || 'New Month'}" oninput="saveAll()">
+      <div class="month-actions">
+        <button class="warning" onclick="clearMonth('${div.id}')">🗑️ Clear</button>
+        <button class="secondary" onclick="exportMonthCSV('${div.id}')">📊 CSV</button>
+        <button class="danger" onclick="deleteMonth('${div.id}')">🗑️ Delete</button>
+      </div>
+    </div>
+    
     <div class="table-section">
-      <h3>Core Bills</h3>
+      <h3>📋 Core Bills</h3>
       <div class="table-container">
         <table id="core-bills-table">
           <thead>
@@ -519,18 +988,18 @@ function getCoreBillsTable() {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>${getCoreBillsRow()}</tbody>
+          <tbody>
+            ${monthData.coreBills && monthData.coreBills.length > 0 
+              ? monthData.coreBills.map(bill => getCoreBillsRow(bill)).join('')
+              : getCoreBillsRow()}
+          </tbody>
         </table>
       </div>
-      <button class="secondary" onclick="addCoreBillsRow(this)" style="margin-top:8px">+ Add Bill</button>
+      <button class="secondary" onclick="addCoreBillsRow(this)" style="margin-top: 8px;">+ Add Bill</button>
     </div>
-  `;
-}
-
-function getOverdraftTable() {
-  return `
+    
     <div class="table-section">
-      <h3>Overdraft Tracking, BNPL, Finance Plan, Debt Tracking</h3>
+      <h3>💳 Overdraft Tracking, BNPL, Finance Plan, Debt Tracking</h3>
       <div class="table-container">
         <table id="overdraft-table">
           <thead>
@@ -547,63 +1016,47 @@ function getOverdraftTable() {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>${getOverdraftRow()}</tbody>
+          <tbody>
+            ${monthData.overdraftEntries && monthData.overdraftEntries.length > 0
+              ? monthData.overdraftEntries.map(entry => getOverdraftRow(entry)).join('')
+              : getOverdraftRow()}
+          </tbody>
         </table>
       </div>
-      <button class="secondary" onclick="addOverdraftRow(this)" style="margin-top:8px">+ Add Entry</button>
+      <button class="secondary" onclick="addOverdraftRow(this)" style="margin-top: 8px;">+ Add Entry</button>
+    </div>
+    
+    <div class="summary">
+      <div class="summary-item">
+        <span>Total Core Bills</span>
+        <b class="core-total">£0.00</b>
+      </div>
+      <div class="summary-item">
+        <span>Total Overdraft/Debt</span>
+        <b class="overdraft-total">£0.00</b>
+      </div>
+      <div class="summary-item">
+        <span>Remaining Salary</span>
+        <b class="remaining-salary">£0.00</b>
+      </div>
     </div>
   `;
-}
-
-// Month Template
-function createMonthSection() {
-  const monthId = 'month-' + Date.now();
-  const monthName = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   
-  return `
-    <div class="month-section" id="${monthId}">
-      <div class="month-header">
-        <input type="text" class="month-name" value="${monthName}" oninput="saveAll()">
-        <div style="display:flex;gap:8px">
-          <button class="secondary" onclick="clearMonth('${monthId}')">Clear Month</button>
-          <button class="secondary" onclick="exportMonthCSV('${monthId}')">Export CSV</button>
-          <button class="danger" onclick="deleteMonth('${monthId}')">Delete Month</button>
-        </div>
-      </div>
-      
-      ${getCoreBillsTable()}
-      ${getOverdraftTable()}
-      
-      <div class="summary">
-        <div class="summary-item">
-          <span>Total Core Bills</span>
-          <b class="core-total">£0.00</b>
-        </div>
-        <div class="summary-item">
-          <span>Total Overdraft/Debt</span>
-          <b class="overdraft-total">£0.00</b>
-        </div>
-        <div class="summary-item">
-          <span>Remaining Salary</span>
-          <b class="remaining-salary">£0.00</b>
-        </div>
-      </div>
-    </div>
-  `;
+  return div;
 }
 
 // Row Operations
 function addCoreBillsRow(button) {
   const table = button.previousElementSibling.querySelector('tbody');
   table.insertAdjacentHTML('beforeend', getCoreBillsRow());
-  attachRowEvents(table.lastElementChild);
+  renderMethodDropdowns();
   saveAll();
 }
 
 function addOverdraftRow(button) {
   const table = button.previousElementSibling.querySelector('tbody');
   table.insertAdjacentHTML('beforeend', getOverdraftRow());
-  attachRowEvents(table.lastElementChild);
+  renderMethodDropdowns();
   saveAll();
 }
 
@@ -612,46 +1065,73 @@ function deleteRow(button) {
   if (row.parentElement.children.length > 1) {
     row.remove();
     saveAll();
+  } else {
+    alert('Cannot delete the last row. Clear the month instead.');
   }
-}
-
-function attachRowEvents(row) {
-  // Add event listeners to all inputs in the row
-  const inputs = row.querySelectorAll('input, select');
-  inputs.forEach(input => {
-    if (!input.hasAttribute('data-event-attached')) {
-      input.setAttribute('data-event-attached', 'true');
-      input.addEventListener('input', saveAll);
-      input.addEventListener('change', saveAll);
-    }
-  });
 }
 
 // Month Operations
 function addMonth() {
-  document.getElementById('months').insertAdjacentHTML('beforeend', createMonthSection());
-  attachAllEvents();
+  const monthId = 'month-' + Date.now();
+  const monthName = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  
+  const newMonth = {
+    id: monthId,
+    name: monthName,
+    coreBills: [],
+    overdraftEntries: []
+  };
+  
+  appData.months.push(newMonth);
+  
+  const monthEl = createMonthElement(newMonth);
+  document.getElementById('months').appendChild(monthEl);
+  document.getElementById('empty-state').style.display = 'none';
+  
+  renderMethodDropdowns();
   saveAll();
-  updateLastSaved();
 }
 
 function clearMonth(monthId) {
-  if (confirm('Clear all data in this month?')) {
-    const month = document.getElementById(monthId);
-    month.querySelectorAll('tbody').forEach(tbody => {
-      // Keep one empty row in each table
-      while (tbody.children.length > 1) {
-        tbody.lastElementChild.remove();
+  if (confirm('Clear all data in this month? This cannot be undone.')) {
+    const monthEl = document.getElementById(monthId);
+    if (monthEl) {
+      // Clear core bills (keep one empty row)
+      const coreTbody = monthEl.querySelector('#core-bills-table tbody');
+      if (coreTbody && coreTbody.children.length > 1) {
+        coreTbody.innerHTML = getCoreBillsRow();
       }
-    });
-    saveAll();
+      
+      // Clear overdraft entries (keep one empty row)
+      const overdraftTbody = monthEl.querySelector('#overdraft-table tbody');
+      if (overdraftTbody && overdraftTbody.children.length > 1) {
+        overdraftTbody.innerHTML = getOverdraftRow();
+      }
+      
+      renderMethodDropdowns();
+      saveAll();
+    }
   }
 }
 
 function deleteMonth(monthId) {
-  if (confirm('Delete this entire month?')) {
-    document.getElementById(monthId).remove();
-    saveAll();
+  if (confirm('Delete this entire month? This cannot be undone.')) {
+    const monthEl = document.getElementById(monthId);
+    if (monthEl) {
+      monthEl.remove();
+      
+      // Remove from appData
+      const index = appData.months.findIndex(m => m.id === monthId);
+      if (index > -1) {
+        appData.months.splice(index, 1);
+      }
+      
+      if (appData.months.length === 0) {
+        document.getElementById('empty-state').style.display = 'block';
+      }
+      
+      saveAll();
+    }
   }
 }
 
@@ -688,64 +1168,25 @@ function calculateMonthTotals(month) {
   month.querySelector('.remaining-salary').textContent = '£' + remaining.toFixed(2);
 }
 
-// Storage
-function saveAll() {
-  const data = {
-    salary: document.getElementById('salary').value,
-    months: document.getElementById('months').innerHTML,
-    methods: methods
-  };
-  localStorage.setItem('financialData', JSON.stringify(data));
-  updateAll();
-  updateLastSaved();
-}
-
-function restore() {
-  const saved = localStorage.getItem('financialData');
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      document.getElementById('salary').value = data.salary || '0';
-      if (data.months) {
-        document.getElementById('months').innerHTML = data.months;
-      }
-      if (data.methods) {
-        methods = data.methods;
-      }
-      attachAllEvents();
-      renderMethodDropdowns();
-      updateAll();
-    } catch (e) {
-      console.error('Error restoring data:', e);
-    }
-  }
-}
-
 function updateAll() {
   document.querySelectorAll('.month-section').forEach(month => {
     calculateMonthTotals(month);
   });
 }
 
-function updateLastSaved() {
-  const now = new Date();
-  document.getElementById('last-saved').textContent = 
-    `Last saved: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-}
-
-function attachAllEvents() {
-  // Attach events to all existing rows
-  document.querySelectorAll('tbody tr').forEach(row => {
-    attachRowEvents(row);
-  });
-  
-  // Re-render method dropdowns
-  renderMethodDropdowns();
+// Dark Mode
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+  const button = document.querySelector('.dark-toggle');
+  button.textContent = document.body.classList.contains('dark') ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
 }
 
 // CSV Export
 function exportMonthCSV(monthId) {
   const month = document.getElementById(monthId);
+  if (!month) return;
+  
   const monthName = month.querySelector('.month-name').value;
   let csv = [];
   
@@ -764,7 +1205,7 @@ function exportMonthCSV(monthId) {
     csv.push(cells.map(c => `"${c}"`).join(','));
   });
   
-  csv.push(''); // Empty line
+  csv.push('', ''); // Empty lines
   
   // Overdraft Table
   csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
@@ -784,119 +1225,127 @@ function exportMonthCSV(monthId) {
     csv.push(cells.map(c => `"${c}"`).join(','));
   });
   
-  downloadCSV(csv.join('\n'), `${monthName.replace(/[^a-z0-9]/gi, '_')}.csv`);
+  downloadCSV(csv.join('\n'), `${monthName.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
 }
 
 function exportAllCSV() {
-  let csv = [];
-  document.querySelectorAll('.month-section').forEach(month => {
-    const monthName = month.querySelector('.month-name').value;
-    csv.push(`Month: ${monthName}`);
+  if (appData.months.length === 0) {
+    alert('No data to export.');
+    return;
+  }
+  
+  let csv = ['Financial Tracker - All Data'];
+  csv.push(`Generated: ${new Date().toLocaleString()}`);
+  csv.push(`Salary: £${appData.salary || '0'}`);
+  csv.push('');
+  
+  appData.months.forEach(monthData => {
+    csv.push(`Month: ${monthData.name}`);
+    csv.push('='.repeat(50));
     
-    // Core Bills
-    csv.push('Core Bills');
-    csv.push('Date,Payment Method,Company,Amount,Payment Type,Paid Status');
-    month.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-      const cells = [
-        row.querySelector('.date-input')?.value || '',
-        row.querySelector('.payment-method')?.value || '',
-        row.querySelector('.company-input')?.value || '',
-        row.querySelector('.amount-input')?.value || '0',
-        row.querySelector('.type-select')?.value || '',
-        row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-      ];
-      csv.push(cells.map(c => `"${c}"`).join(','));
-    });
+    if (monthData.coreBills.length > 0) {
+      csv.push('Core Bills');
+      csv.push('Date,Payment Method,Company,Amount,Payment Type,Paid Status');
+      monthData.coreBills.forEach(bill => {
+        csv.push([
+          bill.date,
+          bill.method,
+          bill.company,
+          bill.amount,
+          bill.type,
+          bill.paid
+        ].map(c => `"${c}"`).join(','));
+      });
+      csv.push('');
+    }
     
-    csv.push(''); // Empty line
+    if (monthData.overdraftEntries.length > 0) {
+      csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
+      csv.push('Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status');
+      monthData.overdraftEntries.forEach(entry => {
+        csv.push([
+          entry.date,
+          entry.method,
+          entry.company,
+          entry.amount,
+          entry.type,
+          entry.currentBalance,
+          entry.outstandingBalance,
+          entry.limit,
+          entry.paid
+        ].map(c => `"${c}"`).join(','));
+      });
+    }
     
-    // Overdraft Table
-    csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
-    csv.push('Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status');
-    month.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-      const cells = [
-        row.querySelector('.date-input')?.value || '',
-        row.querySelector('.payment-method')?.value || '',
-        row.querySelector('.company-input')?.value || '',
-        row.querySelector('.amount-input')?.value || '0',
-        row.querySelector('.type-select')?.value || '',
-        row.querySelector('.current-balance')?.value || '',
-        row.querySelector('.outstanding-balance')?.value || '',
-        row.querySelector('.limit-input')?.value || '',
-        row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
-      ];
-      csv.push(cells.map(c => `"${c}"`).join(','));
-    });
-    
-    csv.push('\n' + '='.repeat(50) + '\n');
+    csv.push('\n\n');
   });
   
-  downloadCSV(csv.join('\n'), 'all_financial_data.csv');
+  downloadCSV(csv.join('\n'), `financial_tracker_all_data_${new Date().toISOString().split('T')[0]}.csv`);
 }
 
 function downloadCSV(data, filename) {
-  const blob = new Blob([data], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
+  const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // PDF Export
 function exportPDF() {
+  if (appData.months.length === 0) {
+    alert('No data to export.');
+    return;
+  }
+  
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   
+  // Title
   doc.setFontSize(20);
+  doc.setTextColor(41, 99, 235);
   doc.text('Financial Tracker Report', 20, 20);
   
   doc.setFontSize(11);
   doc.setTextColor(100);
   doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 30);
+  doc.text(`Monthly Salary: £${parseFloat(appData.salary || 0).toFixed(2)}`, 20, 36);
   
-  let yPos = 40;
+  let yPos = 45;
   
   // Process each month
-  document.querySelectorAll('.month-section').forEach((month, index) => {
-    if (index > 0 && yPos > 250) {
+  appData.months.forEach((month, index) => {
+    if (index > 0) {
       doc.addPage();
       yPos = 20;
     }
     
-    const monthName = month.querySelector('.month-name').value;
-    
     // Month Header
     doc.setFontSize(16);
     doc.setTextColor(0);
-    doc.text(monthName, 20, yPos);
+    doc.text(month.name, 20, yPos);
     yPos += 10;
     
     // Core Bills Table
-    doc.setFontSize(12);
-    doc.setTextColor(50, 50, 50);
-    doc.text('Core Bills', 20, yPos);
-    yPos += 8;
-    
-    const coreHeaders = [['Date', 'Company', 'Amount', 'Type', 'Paid']];
-    const coreRows = [];
-    
-    month.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-      const date = row.querySelector('.date-input')?.value || '';
-      const company = row.querySelector('.company-input')?.value || '';
-      const amount = row.querySelector('.amount-input')?.value || '0';
-      const type = row.querySelector('.type-select')?.value || '';
-      const paid = row.querySelector('input[name="paid"]:checked')?.value || 'not-paid';
+    if (month.coreBills.length > 0) {
+      doc.setFontSize(12);
+      doc.setTextColor(50, 50, 50);
+      doc.text('Core Bills', 20, yPos);
+      yPos += 8;
       
-      if (date || company || amount !== '0') {
-        coreRows.push([date, company, '£' + parseFloat(amount).toFixed(2), type, paid === 'paid' ? '✓' : '✗']);
-      }
-    });
-    
-    if (coreRows.length > 0) {
+      const coreHeaders = [['Date', 'Company', 'Amount', 'Type', 'Paid']];
+      const coreRows = month.coreBills.map(bill => [
+        bill.date,
+        bill.company,
+        '£' + parseFloat(bill.amount).toFixed(2),
+        bill.type,
+        bill.paid === 'paid' ? '✓' : '✗'
+      ]);
+      
       doc.autoTable({
         head: coreHeaders,
         body: coreRows,
@@ -906,108 +1355,75 @@ function exportPDF() {
         margin: { left: 20, right: 20 }
       });
       yPos = doc.lastAutoTable.finalY + 15;
-    } else {
-      doc.text('No core bills recorded', 20, yPos);
-      yPos += 15;
     }
     
     // Overdraft Table
-    doc.text('Overdraft, BNPL, Finance Plan, Debt Tracking', 20, yPos);
-    yPos += 8;
-    
-    const overdraftHeaders = [['Date', 'Bank/Company', 'Amount', 'Type', 'Current', 'Outstanding', 'Limit', 'Paid']];
-    const overdraftRows = [];
-    
-    month.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-      const date = row.querySelector('.date-input')?.value || '';
-      const company = row.querySelector('.company-input')?.value || '';
-      const amount = row.querySelector('.amount-input')?.value || '0';
-      const type = row.querySelector('.type-select')?.value || '';
-      const current = row.querySelector('.current-balance')?.value || '';
-      const outstanding = row.querySelector('.outstanding-balance')?.value || '';
-      const limit = row.querySelector('.limit-input')?.value || '';
-      const paid = row.querySelector('input[name="paid"]:checked')?.value || 'not-paid';
+    if (month.overdraftEntries.length > 0) {
+      doc.text('Overdraft, BNPL, Finance Plan, Debt Tracking', 20, yPos);
+      yPos += 8;
       
-      if (date || company || amount !== '0' || current || outstanding || limit) {
-        overdraftRows.push([
-          date,
-          company,
-          '£' + parseFloat(amount).toFixed(2),
-          type,
-          current ? '£' + parseFloat(current).toFixed(2) : '',
-          outstanding ? '£' + parseFloat(outstanding).toFixed(2) : '',
-          limit ? '£' + parseFloat(limit).toFixed(2) : '',
-          paid === 'paid' ? '✓' : '✗'
-        ]);
-      }
-    });
-    
-    if (overdraftRows.length > 0) {
+      const overdraftHeaders = [['Date', 'Company', 'Amount', 'Type', 'Current', 'Outstanding', 'Limit', 'Paid']];
+      const overdraftRows = month.overdraftEntries.map(entry => [
+        entry.date,
+        entry.company,
+        '£' + parseFloat(entry.amount).toFixed(2),
+        entry.type,
+        entry.currentBalance ? '£' + parseFloat(entry.currentBalance).toFixed(2) : '',
+        entry.outstandingBalance ? '£' + parseFloat(entry.outstandingBalance).toFixed(2) : '',
+        entry.limit ? '£' + parseFloat(entry.limit).toFixed(2) : '',
+        entry.paid === 'paid' ? '✓' : '✗'
+      ]);
+      
       doc.autoTable({
         head: overdraftHeaders,
         body: overdraftRows,
         startY: yPos,
         theme: 'grid',
         headStyles: { fillColor: [41, 128, 185] },
-        margin: { left: 20, right: 20 }
+        margin: { left: 20, right: 20 },
+        styles: { fontSize: 9 }
       });
       yPos = doc.lastAutoTable.finalY + 15;
-    } else {
-      doc.text('No overdraft/debt records', 20, yPos);
-      yPos += 15;
     }
     
-    // Summary
-    const coreTotal = month.querySelector('.core-total')?.textContent || '£0.00';
-    const overdraftTotal = month.querySelector('.overdraft-total')?.textContent || '£0.00';
-    const remaining = month.querySelector('.remaining-salary')?.textContent || '£0.00';
+    // Calculate totals for this month
+    const coreTotal = month.coreBills.reduce((sum, bill) => sum + parseFloat(bill.amount || 0), 0);
+    const overdraftTotal = month.overdraftEntries.reduce((sum, entry) => sum + parseFloat(entry.amount || 0), 0);
+    const remaining = parseFloat(appData.salary || 0) - coreTotal - overdraftTotal;
     
+    // Summary
     doc.setFontSize(12);
     doc.text('Summary:', 20, yPos);
     yPos += 7;
     doc.setFontSize(10);
-    doc.text(`Total Core Bills: ${coreTotal}`, 25, yPos); yPos += 5;
-    doc.text(`Total Overdraft/Debt: ${overdraftTotal}`, 25, yPos); yPos += 5;
-    doc.text(`Remaining Salary: ${remaining}`, 25, yPos); yPos += 15;
+    doc.text(`Total Core Bills: £${coreTotal.toFixed(2)}`, 25, yPos); yPos += 5;
+    doc.text(`Total Overdraft/Debt: £${overdraftTotal.toFixed(2)}`, 25, yPos); yPos += 5;
+    doc.text(`Remaining Salary: £${remaining.toFixed(2)}`, 25, yPos); yPos += 15;
   });
   
-  doc.save('financial-tracker-report.pdf');
+  // Save PDF
+  doc.save(`financial_tracker_report_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
-// Dark Mode
-function toggleDarkMode() {
-  document.body.classList.toggle('dark');
-  const button = document.querySelector('.dark-toggle');
-  button.textContent = document.body.classList.contains('dark') ? '☀️ Light' : '🌙 Dark';
-  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
-}
+// Auto-save
+setInterval(saveAll, 30000); // Auto-save every 30 seconds
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  // Restore dark mode
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark');
-    document.querySelector('.dark-toggle').textContent = '☀️ Light';
-  }
-  
-  // Restore data
-  restore();
-  
-  // Add first month if none exists
-  if (!document.querySelector('.month-section')) {
-    addMonth();
-  }
-  
-  // Auto-save every minute
-  setInterval(saveAll, 60000);
-  
-  // Show welcome message
-  setTimeout(() => {
-    if (!localStorage.getItem('financialData')) {
-      alert('Welcome! Start by entering your monthly salary and adding bills. Your data is saved automatically.');
-    }
-  }, 500);
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', initApp);
+
+// Save on page unload
+window.addEventListener('beforeunload', (e) => {
+  saveAll();
 });
+
+// Service Worker registration for PWA (optional)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(error => {
+      console.log('Service Worker registration failed:', error);
+    });
+  });
+}
 </script>
 </body>
 </html>
