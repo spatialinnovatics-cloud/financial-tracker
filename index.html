@@ -1,298 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Financial Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>Financial Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2563eb">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
 
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
-  <style>
-    :root {
-      --bg:#f4f6f9; --card:#fff; --text:#111827; --line:#e5e7eb;
-      --accent:#2563eb; --accent-soft:#e7f0ff;
-    }
-    body.dark {
-      --bg:#0d1117; --card:#161b22; --text:#e6edf3;
-      --line:#30363d; --accent-soft:#1f2937;
-    }
-    body {
-      margin:0; background:var(--bg); color:var(--text);
-      font-family:system-ui,sans-serif;
-    }
-    .page {
-      max-width:1100px; margin:24px auto; padding:20px;
-      background:var(--card); border-radius:16px;
-    }
-    h1 { text-align:center; margin:0; }
-    .subtitle { text-align:center; opacity:.7; margin-bottom:16px; }
-    .top { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
-    button {
-      background:var(--accent); color:white; border:none;
-      padding:8px 12px; border-radius:6px; cursor:pointer;
-      font-size:13px;
-    }
-    button.secondary { background:#4b5563; }
-    .salary {
-      padding:12px; background:var(--accent-soft);
-      border-radius:10px; margin-bottom:16px;
-    }
-    .month {
-      border-top:1px solid var(--line); padding-top:16px; margin-top:20px;
-    }
-    h2 { margin:0 0 10px; }
-    h3 { margin:14px 0 6px; font-size:14px; }
-    table {
-      width:100%; border-collapse:collapse; min-width:700px;
-    }
-    th,td {
-      border-bottom:1px solid var(--line);
-      padding:6px; font-size:12px;
-    }
-    th { background:var(--accent-soft); }
-    input,select {
-      width:100%; font-size:12px;
-      padding:4px; border-radius:4px;
-      border:1px solid var(--line);
-      background:var(--card); color:var(--text);
-    }
-    .table-wrap { overflow-x:auto; margin-bottom:10px; }
-    .delete { color:#ef4444; cursor:pointer; font-weight:bold; }
-    .summary {
-      display:flex; gap:14px; flex-wrap:wrap;
-      font-size:12px; margin-top:10px;
-    }
-    .dark-toggle {
-      position:fixed; top:12px; right:12px;
-    }
-  </style>
+<style>
+:root{
+  --bg:#f4f6f9;--card:#fff;--text:#111827;--line:#e5e7eb;
+  --accent:#2563eb;--soft:#e7f0ff;
+}
+body.dark{
+  --bg:#0d1117;--card:#161b22;--text:#e6edf3;--line:#30363d;--soft:#1f2937;
+}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,sans-serif;
+}
+.page{
+  max-width:1200px;margin:20px auto;padding:20px;
+  background:var(--card);border-radius:14px;
+}
+h1{text-align:center;margin:0}
+.sub{text-align:center;opacity:.7;margin-bottom:16px}
+button{
+  background:var(--accent);color:#fff;border:none;
+  padding:7px 12px;border-radius:6px;cursor:pointer;font-size:13px;
+}
+button.secondary{background:#4b5563}
+.top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.salary{padding:12px;background:var(--soft);border-radius:10px;margin-bottom:14px}
+.month{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+h2{margin:0 0 10px}
+.table-wrap{overflow-x:auto;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;min-width:950px}
+th,td{
+  border-bottom:1px solid var(--line);
+  padding:6px;font-size:12px;white-space:nowrap
+}
+th{background:var(--soft)}
+input,select{
+  width:100%;font-size:12px;padding:4px;border-radius:4px;
+  border:1px solid var(--line);background:var(--card);color:var(--text)
+}
+.delete{color:#ef4444;font-weight:bold;cursor:pointer;text-align:center}
+.summary{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:8px}
+.dark-toggle{position:fixed;top:10px;right:10px}
+</style>
 </head>
 
 <body>
 
-<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">
-  Dark
-</button>
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Dark</button>
 
 <div class="page">
-  <h1>Financial Tracker</h1>
-  <div class="subtitle">Bills • BNPL • Finance • Debt • Transactions</div>
+<h1>Financial Tracker</h1>
+<div class="sub">Unified Ledger • Bills • BNPL • Finance • Debt • Transactions</div>
 
-  <div class="salary">
-    Monthly Salary (£):
-    <input id="salary" type="number" value="0" oninput="saveAll()" />
-  </div>
+<div class="salary">
+Monthly Salary (£):
+<input id="salary" type="number" value="0" oninput="saveAll()">
+</div>
 
-  <div class="top">
-    <button onclick="addMonth()">+ Add Month</button>
-    <button class="secondary" onclick="exportAllCSV()">Export All CSV</button>
-  </div>
+<div class="top">
+<button onclick="addMonth()">+ Add Month</button>
+<button class="secondary" onclick="exportAllCSV()">Export All CSV</button>
+</div>
 
-  <div id="months"></div>
+<div id="months"></div>
 </div>
 
 <script>
-/* ---------------- PAYMENT METHODS ---------------- */
-
-let paymentMethods = JSON.parse(localStorage.getItem("methods")) || [
-  "Cash","Debit Card","Credit Card","BNPL","Bank Transfer",
-  "Direct Debit","Standing Order","Monzo","NatWest",
-  "PayPal","Apple Pay","Google Pay","Other"
+/* ===== PAYMENT METHODS ===== */
+let methods = JSON.parse(localStorage.getItem("methods")) || [
+ "Cash","Debit Card","Credit Card","BNPL","Bank Transfer",
+ "Direct Debit","Standing Order","Monzo","NatWest",
+ "PayPal","Apple Pay","Google Pay","Other"
 ];
-
-function saveMethods(){
-  localStorage.setItem("methods",JSON.stringify(paymentMethods));
+function saveMethods(){localStorage.setItem("methods",JSON.stringify(methods));}
+function methodSelect(val=""){
+ return `<select class="method">
+ <option></option>
+ ${methods.map(m=>`<option ${m===val?"selected":""}>${m}</option>`).join("")}
+ <option value="__add">➕ Add new…</option>
+ </select>`;
 }
 
-function methodSelect(selected=""){
-  return `
-    <select class="method">
-      <option value=""></option>
-      ${paymentMethods.map(m=>`<option ${m===selected?"selected":""}>${m}</option>`).join("")}
-      <option value="__add">➕ Add new…</option>
-    </select>
-  `;
-}
-
-/* ---------------- STORAGE ---------------- */
-
+/* ===== STORAGE ===== */
 function saveAll(){
-  localStorage.setItem("salary",document.getElementById("salary").value);
-  localStorage.setItem("monthsHTML",document.getElementById("months").innerHTML);
-  updateAll();
+ localStorage.setItem("salary",document.getElementById("salary").value);
+ localStorage.setItem("months",document.getElementById("months").innerHTML);
+ updateAll();
 }
-
 function restore(){
-  const s = localStorage.getItem("salary");
-  const m = localStorage.getItem("monthsHTML");
-  if(s) document.getElementById("salary").value=s;
-  if(m) document.getElementById("months").innerHTML=m;
-  attachEvents();
-  updateAll();
+ const s=localStorage.getItem("salary");
+ const m=localStorage.getItem("months");
+ if(s) salary.value=s;
+ if(m) months.innerHTML=m;
+ attachEvents(); updateAll();
 }
 
-/* ---------------- MONTH / ROWS ---------------- */
-
+/* ===== ROW TEMPLATE (UNIFIED) ===== */
 function row(){
-  return `
-  <tr>
-    <td><input type="checkbox" class="paid"></td>
-    <td><input></td>
-    <td><input type="number" step="0.01" value="0"></td>
-    <td><input></td>
-    <td>${methodSelect()}</td>
-    <td class="delete">✖</td>
-  </tr>`;
+ return `
+<tr>
+<td><input type="checkbox" class="paid"></td>
+<td><input type="date"></td>
+<td>
+<select>
+<option></option>
+<option>Income</option>
+<option>Expense</option>
+<option>Debt</option>
+<option>BNPL</option>
+<option>Finance</option>
+<option>Adjustment</option>
+</select>
+</td>
+<td>
+<select>
+<option></option>
+<option>Bills</option>
+<option>Subscriptions</option>
+<option>Food</option>
+<option>Transport</option>
+<option>Business</option>
+<option>Health</option>
+<option>Shopping</option>
+<option>Debt</option>
+<option>Savings</option>
+<option>Other</option>
+</select>
+</td>
+<td><input type="number" step="0.01" value="0"></td>
+<td><input></td>
+<td>${methodSelect()}</td>
+<td class="delete">✖</td>
+</tr>`;
 }
 
-function section(title){
-  return `
-    <h3>${title}</h3>
-    <button class="secondary" onclick="addRow(this)">+ Row</button>
-    <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Paid</th><th>Type</th><th>Amount</th><th>Description</th><th>Method</th><th></th>
-        </tr>
-      </thead>
-      <tbody>${row()}</tbody>
-    </table>
-    </div>
-  `;
+/* ===== SECTION ===== */
+function section(name){
+ return `
+<h3>${name}</h3>
+<button class="secondary" onclick="addRow(this)">+ Row</button>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Paid</th><th>Date</th><th>Type</th><th>Category</th>
+<th>Amount (£)</th><th>Description</th><th>Method</th><th></th>
+</tr>
+</thead>
+<tbody>${row()}</tbody>
+</table>
+</div>`;
 }
 
+/* ===== MONTH ===== */
 function addMonth(){
-  const div=document.createElement("div");
-  div.className="month";
-  div.innerHTML=`
-    <h2 contenteditable oninput="saveAll()">New Month</h2>
-    <button class="secondary" onclick="clearMonth(this)">Clear Month</button>
-    <button class="secondary" onclick="exportMonthCSV(this)">Export CSV</button>
-    ${section("Bills")}
-    ${section("BNPL")}
-    ${section("Finance Plans")}
-    ${section("Debt")}
-    <div class="summary">
-      <span>Total: £<b class="total">0</b></span>
-      <span>Paid: £<b class="paidTotal">0</b></span>
-      <span>Net: £<b class="net">0</b></span>
-    </div>
-  `;
-  document.getElementById("months").appendChild(div);
-  attachEvents();
-  saveAll();
+ const d=document.createElement("div");
+ d.className="month";
+ d.innerHTML=`
+<h2 contenteditable oninput="saveAll()">New Month</h2>
+<button class="secondary" onclick="clearMonth(this)">Clear Month</button>
+<button class="secondary" onclick="exportMonthCSV(this)">Export CSV</button>
+${section("Bills")}
+${section("BNPL")}
+${section("Finance Plans")}
+${section("Debt")}
+${section("Transactions")}
+<div class="summary">
+<span>Total Out: £<b class="out">0</b></span>
+<span>Net: £<b class="net">0</b></span>
+</div>`;
+ months.appendChild(d);
+ attachEvents(); saveAll();
 }
 
+/* ===== ROW OPS ===== */
 function addRow(btn){
-  btn.nextElementSibling.querySelector("tbody")
-    .insertAdjacentHTML("beforeend",row());
-  attachEvents(); saveAll();
+ btn.nextElementSibling.querySelector("tbody")
+ .insertAdjacentHTML("beforeend",row());
+ attachEvents(); saveAll();
 }
-
 function clearMonth(btn){
-  btn.parentElement.querySelectorAll("tbody").forEach(t=>t.innerHTML="");
-  saveAll();
+ btn.parentElement.querySelectorAll("tbody").forEach(t=>t.innerHTML="");
+ saveAll();
 }
 
-/* ---------------- EVENTS ---------------- */
-
+/* ===== EVENTS ===== */
 function attachEvents(){
-  document.querySelectorAll(".delete").forEach(d=>{
-    d.onclick=()=>{d.closest("tr").remove(); saveAll();}
-  });
-  document.querySelectorAll(".method").forEach(sel=>{
-    sel.onchange=()=>{
-      if(sel.value==="__add"){
-        const m=prompt("New payment method:");
-        if(m && !paymentMethods.includes(m)){
-          paymentMethods.push(m); saveMethods();
-          document.querySelectorAll(".method").forEach(s=>{
-            s.innerHTML=methodSelect(s.value);
-          });
-        }
-        sel.value="";
-      }
-      saveAll();
-    };
-  });
+ document.querySelectorAll(".delete").forEach(d=>{
+  d.onclick=()=>{d.closest("tr").remove();saveAll();}
+ });
+ document.querySelectorAll(".method").forEach(s=>{
+  s.onchange=()=>{
+   if(s.value==="__add"){
+    const m=prompt("New payment method:");
+    if(m && !methods.includes(m)){methods.push(m);saveMethods();}
+    document.querySelectorAll(".method").forEach(x=>x.innerHTML=methodSelect(x.value));
+    s.value="";
+   }
+   saveAll();
+  }
+ });
 }
 
-/* ---------------- CALCS ---------------- */
-
+/* ===== CALCS ===== */
 function updateAll(){
-  document.querySelectorAll(".month").forEach(m=>{
-    let total=0, paid=0;
-    m.querySelectorAll("tbody tr").forEach(r=>{
-      const amt=parseFloat(r.children[2].querySelector("input").value||0);
-      total+=amt;
-      if(r.querySelector(".paid").checked) paid+=amt;
-    });
-    const salary=parseFloat(document.getElementById("salary").value||0);
-    m.querySelector(".total").innerText=total.toFixed(2);
-    m.querySelector(".paidTotal").innerText=paid.toFixed(2);
-    m.querySelector(".net").innerText=(salary-total).toFixed(2);
-  });
-}
-
-/* ---------------- CSV ---------------- */
-
-function exportMonthCSV(btn){
-  const m=btn.parentElement;
-  let rows=["Section,Type,Amount,Description,Method,Paid"];
+ document.querySelectorAll(".month").forEach(m=>{
+  let out=0,net=0;
   m.querySelectorAll("tbody tr").forEach(r=>{
-    const cells=r.children;
-    rows.push([
-      "Month",
-      cells[1].querySelector("input").value,
-      cells[2].querySelector("input").value,
-      cells[3].querySelector("input").value,
-      cells[4].querySelector("select").value,
-      r.querySelector(".paid").checked
-    ].join(","));
+   const amt=parseFloat(r.children[4].querySelector("input").value||0);
+   const type=r.children[2].querySelector("select").value;
+   if(type!=="Income") out+=amt;
+   net+=amt;
   });
-  download(rows.join("\n"),"month.csv");
+  const sal=parseFloat(salary.value||0);
+  m.querySelector(".out").innerText=out.toFixed(2);
+  m.querySelector(".net").innerText=(sal+net).toFixed(2);
+ });
 }
 
+/* ===== CSV ===== */
+function exportMonthCSV(btn){
+ const m=btn.parentElement;
+ let rows=["Section,Date,Type,Category,Amount,Description,Method,Paid"];
+ m.querySelectorAll("tbody tr").forEach(r=>{
+  rows.push([
+   "Month",
+   r.children[1].querySelector("input").value,
+   r.children[2].querySelector("select").value,
+   r.children[3].querySelector("select").value,
+   r.children[4].querySelector("input").value,
+   r.children[5].querySelector("input").value,
+   r.children[6].querySelector("select").value,
+   r.children[0].querySelector("input").checked
+  ].join(","));
+ });
+ download(rows.join("\n"),"month.csv");
+}
 function exportAllCSV(){
-  let rows=["Month,Type,Amount,Description,Method,Paid"];
-  document.querySelectorAll(".month").forEach(m=>{
-    const name=m.querySelector("h2").innerText;
-    m.querySelectorAll("tbody tr").forEach(r=>{
-      rows.push([
-        name,
-        r.children[1].querySelector("input").value,
-        r.children[2].querySelector("input").value,
-        r.children[3].querySelector("input").value,
-        r.children[4].querySelector("select").value,
-        r.querySelector(".paid").checked
-      ].join(","));
-    });
+ let rows=["Month,Date,Type,Category,Amount,Description,Method,Paid"];
+ document.querySelectorAll(".month").forEach(m=>{
+  const name=m.querySelector("h2").innerText;
+  m.querySelectorAll("tbody tr").forEach(r=>{
+   rows.push([
+    name,
+    r.children[1].querySelector("input").value,
+    r.children[2].querySelector("select").value,
+    r.children[3].querySelector("select").value,
+    r.children[4].querySelector("input").value,
+    r.children[5].querySelector("input").value,
+    r.children[6].querySelector("select").value,
+    r.children[0].querySelector("input").checked
+   ].join(","));
   });
-  download(rows.join("\n"),"all_months.csv");
+ });
+ download(rows.join("\n"),"all_months.csv");
 }
-
 function download(data,name){
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([data],{type:"text/csv"}));
-  a.download=name; a.click();
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob([data],{type:"text/csv"}));
+ a.download=name;a.click();
 }
 
-/* ---------------- INIT ---------------- */
-
+/* ===== INIT ===== */
 document.addEventListener("DOMContentLoaded",()=>{
-  restore();
-  if(!document.querySelector(".month")) addMonth();
+ restore();
+ if(!document.querySelector(".month")) addMonth();
 });
 </script>
 
 </body>
 </html>
-
