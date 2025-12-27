@@ -978,7 +978,7 @@ function saveAll() {
           });
         });
         
-        // Get overdraft entries - FIXED LIMIT FIELD
+        // Get overdraft entries
         monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
           monthData.overdraftEntries.push({
             date: row.querySelector('.date-input')?.value || '',
@@ -988,7 +988,7 @@ function saveAll() {
             type: row.querySelector('.type-select')?.value || '',
             currentBalance: row.querySelector('.current-balance')?.value || '',
             outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
-            limit: row.querySelector('.limit-input')?.value || '', // FIXED: This was .limit before
+            limit: row.querySelector('.limit-input')?.value || '',
             paid: row.querySelector('input[name="paid"]:checked')?.value || 'not-paid'
           });
         });
@@ -1179,7 +1179,7 @@ function handleMethodChange(select) {
   }
 }
 
-// Row Templates - FIXED LIMIT FIELD
+// Row Templates
 function getCoreBillsRow(data = {}) {
   return `
     <tr>
