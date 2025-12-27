@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Financial Tracker</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#2563eb" />
 
 <!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -39,7 +39,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   line-height: 1.5;
   font-size: 14px;
   padding-bottom: var(--nav-height);
@@ -51,6 +51,8 @@ body {
   background: var(--card);
   min-height: calc(100vh - var(--nav-height));
 }
+
+/* Header */
 .header {
   text-align: center;
   margin-bottom: 20px;
@@ -61,6 +63,7 @@ body {
 h1 { margin: 0 0 8px 0; font-weight: 600; font-size: 24px; }
 .subtitle { color: var(--text); opacity: 0.7; margin: 0; font-size: 14px; }
 
+/* Controls */
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -90,6 +93,7 @@ button.danger { background: var(--danger); }
 button.success { background: var(--success); }
 button.warning { background: var(--warning); }
 
+/* Salary Input */
 .salary-input {
   background: var(--soft);
   padding: 16px;
@@ -109,6 +113,7 @@ button.warning { background: var(--warning); }
 }
 .salary-input input:focus { outline: 2px solid var(--accent); border-color: transparent; }
 
+/* Month Sections */
 .month-section {
   background: var(--bg);
   border-radius: var(--radius);
@@ -118,10 +123,7 @@ button.warning { background: var(--warning); }
   display: none;
 }
 .month-section.active { display: block; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .month-header {
   display: flex;
   flex-direction: column;
@@ -133,7 +135,6 @@ button.warning { background: var(--warning); }
 @media (min-width: 768px) {
   .month-header { flex-direction: row; justify-content: space-between; align-items: center; }
 }
-.month-header h2 { margin: 0; font-weight: 600; font-size: 20px; flex: 1; }
 .month-header input {
   font-size: 20px;
   font-weight: 600;
@@ -148,6 +149,7 @@ button.warning { background: var(--warning); }
 .month-header input:focus { outline: 2px solid var(--accent); background: var(--card); }
 .month-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+/* Tables */
 .table-section { margin-bottom: 24px; }
 .table-section h3 {
   margin: 0 0 12px 0;
@@ -166,7 +168,7 @@ button.warning { background: var(--warning); }
   margin-bottom: 12px;
   -webkit-overflow-scrolling: touch;
 }
-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
 thead { background: var(--soft); }
 th {
   padding: 12px 8px;
@@ -189,6 +191,7 @@ td {
 tbody tr:hover td { background: var(--soft); }
 tbody tr:last-child td { border-bottom: none; }
 
+/* Form Elements */
 input, select {
   width: 100%;
   padding: 8px 10px;
@@ -201,11 +204,12 @@ input, select {
   min-height: 40px;
 }
 input:focus, select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
 .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
 .radio-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; white-space: nowrap; }
 input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 
-.paid-status { min-width: 120px; }
+.paid-status { min-width: 150px; }
 .actions { white-space: nowrap; min-width: 60px; }
 .delete-btn {
   background: none;
@@ -223,6 +227,7 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 }
 .delete-btn:hover { background: rgba(220, 38, 38, 0.1); }
 
+/* Summary */
 .summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -235,6 +240,7 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 .summary-item span { display: block; font-size: 13px; opacity: 0.7; margin-bottom: 8px; font-weight: 500; }
 .summary-item b { font-size: 20px; font-weight: 600; }
 
+/* Dark toggle */
 .dark-toggle {
   position: fixed;
   top: 16px;
@@ -250,17 +256,22 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+/* Modal */
 .modal-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 2000; padding: 20px;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
 }
 .modal {
   background: var(--card);
   border-radius: var(--radius);
   width: 100%;
-  max-width: 500px;
+  max-width: 560px;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
@@ -276,39 +287,38 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 }
 .modal-header h3 { margin: 0; flex: 1; font-size: 18px; }
 .modal-close {
-  background: none; border: none; color: var(--text);
-  cursor: pointer; padding: 8px; border-radius: 4px; font-size: 20px;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 20px;
 }
 .modal-close:hover { background: var(--soft); }
 .modal-content { padding: 20px; overflow-y: auto; flex: 1; }
 .modal-footer { padding: 20px; border-top: 1px solid var(--line); display: flex; gap: 8px; justify-content: flex-end; }
 
+/* Lists manager */
 .methods-list { margin: 0; padding: 0; list-style: none; }
 .method-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px; border-radius: var(--radius);
-  margin-bottom: 8px; background: var(--soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  background: var(--soft);
 }
 .method-item input { flex: 1; margin: 0; }
-.add-method-form { display: flex; gap: 10px; margin-top: 20px; }
+.add-method-form { display: flex; gap: 10px; margin-top: 14px; }
 .add-method-form input { flex: 1; margin: 0; }
 
-@media (max-width: 768px) {
-  .page { padding: 12px; }
-  h1 { font-size: 22px; }
-  .controls { flex-direction: column; align-items: stretch; }
-  .controls button { width: 100%; justify-content: center; }
-  .salary-input input { max-width: 100%; }
-  .month-actions { width: 100%; }
-  .month-actions button { flex: 1; min-width: 0; }
-  table { font-size: 13px; }
-  th, td { padding: 10px 6px; }
-  .summary { grid-template-columns: 1fr; }
-}
-
+/* Loading + notifications */
 .loading {
   display: none;
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
   background: var(--bg);
   z-index: 3000;
   align-items: center;
@@ -317,21 +327,6 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
   color: var(--text);
 }
 .loading.active { display: flex; }
-
-.last-saved {
-  font-size: 12px;
-  opacity: 0.7;
-  margin-left: auto;
-  padding: 4px 8px;
-  background: var(--soft);
-  border-radius: 4px;
-  display: none;
-}
-@media (min-width: 768px) { .last-saved { display: block; } }
-
-.empty-state { text-align: center; padding: 40px 20px; color: var(--text); opacity: 0.6; }
-.empty-state p { margin: 8px 0; }
-
 .notification {
   position: fixed;
   bottom: calc(var(--nav-height) + 20px);
@@ -353,6 +348,7 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
   to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
+/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -370,14 +366,12 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 .pagination-btn:hover:not(:disabled) { background: var(--accent); color: white; }
 .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.pagination-info { font-size: 14px; color: var(--text); opacity: 0.7; }
+.pagination-info { font-size: 14px; opacity: 0.7; }
 
+/* Bottom nav */
 .bottom-nav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -405,12 +399,13 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
   opacity: 0.7;
   transition: all 0.2s;
   flex: 1;
-  max-width: 100px;
+  max-width: 120px;
 }
 .nav-btn:hover { opacity: 1; background: var(--soft); }
 .nav-btn.active { opacity: 1; color: var(--accent); background: var(--soft); }
 .nav-icon { font-size: 20px; }
 
+/* Reports */
 .reports-page { display: none; }
 .reports-page.active { display: block; }
 .report-card {
@@ -424,15 +419,38 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 .report-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .report-card h3 { margin: 0 0 8px 0; font-size: 16px; }
 .report-card p { margin: 0; opacity: 0.7; font-size: 13px; }
+
 .help-text { font-size: 12px; opacity: 0.6; margin-top: 4px; display: block; }
-.reports-modal { max-width: 800px; }
-.report-section { margin-bottom: 24px; }
-.report-section h4 { margin: 0 0 12px 0; font-size: 15px; color: var(--text); opacity: 0.9; }
+
+.last-saved {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-left: auto;
+  padding: 4px 8px;
+  background: var(--soft);
+  border-radius: 4px;
+  display: none;
+}
+@media (min-width: 768px) { .last-saved { display: block; } }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  opacity: 0.6;
+}
+@media (max-width: 768px) {
+  .page { padding: 12px; }
+  .controls { flex-direction: column; align-items: stretch; }
+  .controls button { width: 100%; justify-content: center; }
+  .salary-input input { max-width: 100%; }
+  .month-actions { width: 100%; }
+  .month-actions button { flex: 1; min-width: 0; }
+  .summary { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 
 <body>
-
 <button class="dark-toggle" onclick="toggleDarkMode()">🌙 Dark</button>
 
 <div class="loading" id="loading">Loading your data...</div>
@@ -447,11 +465,14 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 
   <div class="salary-input">
     <label for="salary">Monthly Salary (£)</label>
-    <input id="salary" type="number" value="0" min="0" step="0.01" oninput="saveAll()" placeholder="Enter your monthly salary">
+    <input id="salary" type="number" value="0" min="0" step="0.01" oninput="saveAll()" placeholder="Enter your monthly salary" />
   </div>
 
   <div class="controls">
     <button onclick="addMonth()">📅 Add Month</button>
+    <button class="secondary" onclick="openListManager(LIST_KEYS.methods)">⚙ Manage Methods</button>
+    <button class="secondary" onclick="openListManager(LIST_KEYS.coreTypes)">⚙ Manage Core Types</button>
+    <button class="secondary" onclick="openListManager(LIST_KEYS.debtTypes)">⚙ Manage Debt Types</button>
     <button class="success" onclick="exportPDF()">📄 Export PDF</button>
     <button class="secondary" onclick="exportAllCSV()">📊 Export All CSV</button>
     <button class="secondary" onclick="showBackupManager()">💾 Backup</button>
@@ -465,7 +486,7 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
     </div>
   </div>
 
-  <div class="pagination" id="pagination" style="display: none;">
+  <div class="pagination" id="pagination" style="display:none;">
     <button class="pagination-btn" onclick="prevMonth()" id="prev-btn">← Previous</button>
     <div class="pagination-info" id="page-info">Month 1 of 1</div>
     <button class="pagination-btn" onclick="nextMonth()" id="next-btn">Next →</button>
@@ -486,7 +507,7 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 
   <div class="report-card" onclick="showCategoryBreakdown()">
     <h3>📈 Category Breakdown</h3>
-    <p>Analysis of spending by payment type and category</p>
+    <p>Analysis of spending by core bill type</p>
   </div>
 
   <div class="report-card" onclick="showPaymentMethodAnalysis()">
@@ -508,526 +529,398 @@ input[type="radio"] { width: auto; margin: 0; min-height: auto; }
 <!-- Bottom Navigation -->
 <div class="bottom-nav">
   <button class="nav-btn active" id="nav-home" onclick="showPage('home')">
-    <span class="nav-icon">🏠</span>
-    <span>Home</span>
+    <span class="nav-icon">🏠</span><span>Home</span>
   </button>
   <button class="nav-btn" id="nav-reports" onclick="showPage('reports')">
-    <span class="nav-icon">📊</span>
-    <span>Reports</span>
+    <span class="nav-icon">📊</span><span>Reports</span>
   </button>
 </div>
 
 <script>
-/* =========================
-   FIXES INCLUDED
-   1) PDF export hardened (safe number parsing, no NaN)
-   2) Backup/restore includes ALL dropdown lists + dark mode
-   3) ALL dropdowns are user-extensible via one manager modal:
-      - Payment Methods
-      - Core Bill Types
-      - Debt/Overdraft Types
-   4) Radio bug fixed: each row has unique group name (no cross-row interference)
-   ========================= */
+/* =========================================================
+   Globals + Storage Keys
+========================================================= */
+window.jsPDF = window.jspdf?.jsPDF;
 
-// jsPDF UMD binding
-window.jsPDF = window.jspdf && window.jspdf.jsPDF ? window.jspdf.jsPDF : null;
+const STORAGE = {
+  data: "fin_tracker_data_v2",
+  lists: "fin_tracker_lists_v2",
+  dark: "darkMode"
+};
 
-// Global variables
+const LIST_KEYS = {
+  methods: "methods",
+  coreTypes: "coreTypes",
+  debtTypes: "debtTypes"
+};
+
 let currentMonthIndex = 0;
 let monthsData = [];
+let listManagerOverlay = null;
 
-// Dropdown lists (all user-extensible)
-const LIST_KEYS = {
-  methods: 'fin_tracker_methods',
-  coreTypes: 'fin_tracker_core_types',
-  debtTypes: 'fin_tracker_debt_types'
-};
-
-const DEFAULT_LISTS = {
-  [LIST_KEYS.methods]: [
-    "Cash", "Debit Card", "Credit Card", "Bank Transfer", "Direct Debit",
-    "Standing Order", "PayPal", "Apple Pay", "Google Pay", "Other"
-  ],
-  [LIST_KEYS.coreTypes]: [
-    "Utility", "Rent/Mortgage", "Insurance", "Subscription", "Loan", "Other"
-  ],
-  [LIST_KEYS.debtTypes]: [
-    "Overdraft", "BNPL", "Finance Plan", "Debt"
-  ]
-};
-
-// Runtime lists
 window.lists = {
   [LIST_KEYS.methods]: [],
   [LIST_KEYS.coreTypes]: [],
   [LIST_KEYS.debtTypes]: []
 };
 
-// Generic list manager modal
-let listManagerModal = null;
-let listManagerKey = null;
-
-// Utility: safe number parsing
-function n(v) {
-  const x = parseFloat(v);
-  return Number.isFinite(x) ? x : 0;
-}
-
-// Utility: unique row id
-function uid(prefix = 'r') {
+function uid(prefix="id") {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-// Initialize app
-function initApp() {
-  showLoading(true);
+/* =========================================================
+   Notifications + Loading
+========================================================= */
+function showNotification(message, type="info") {
+  const n = document.getElementById("notification");
+  n.textContent = message;
+  n.className = "notification show";
 
-  try {
-    // Restore dark mode
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark');
-      document.querySelector('.dark-toggle').textContent = '☀️ Light';
-    }
+  if (type === "error") n.style.background = "var(--danger)";
+  else if (type === "success") n.style.background = "var(--success)";
+  else n.style.background = "var(--accent)";
 
-    // Restore lists
-    for (const key of Object.values(LIST_KEYS)) {
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        try {
-          const arr = JSON.parse(saved);
-          window.lists[key] = Array.isArray(arr) && arr.length ? arr : DEFAULT_LISTS[key].slice();
-        } catch {
-          window.lists[key] = DEFAULT_LISTS[key].slice();
-        }
-      } else {
-        window.lists[key] = DEFAULT_LISTS[key].slice();
-      }
-    }
-
-    // Restore app data
-    const savedData = localStorage.getItem('fin_tracker_data');
-    if (savedData) {
-      try {
-        const data = JSON.parse(savedData);
-
-        if (data.salary !== undefined) {
-          document.getElementById('salary').value = data.salary;
-        }
-
-        if (data.months && data.months.length > 0) {
-          monthsData = data.months;
-          currentMonthIndex = Math.min(currentMonthIndex, monthsData.length - 1);
-          renderCurrentMonth();
-          document.getElementById('empty-state').style.display = 'none';
-          document.getElementById('pagination').style.display = 'flex';
-        } else {
-          // show empty state
-          document.getElementById('empty-state').style.display = 'block';
-        }
-
-      } catch (e) {
-        console.error('Error parsing saved data:', e);
-        showNotification('Error loading saved data. Starting fresh.', 'error');
-        monthsData = [];
-        saveLists();
-      }
-    } else {
-      // no saved data
-      document.getElementById('empty-state').style.display = 'block';
-    }
-
-    updateLastSaved('Data loaded');
-  } catch (error) {
-    console.error('Error initializing app:', error);
-    showNotification('Error loading app. Please refresh.', 'error');
-  } finally {
-    setTimeout(() => showLoading(false), 300);
-  }
+  setTimeout(() => { n.className = "notification"; }, 3000);
 }
 
-// Notifications
-function showNotification(message, type = 'info') {
-  const notification = document.getElementById('notification');
-  notification.textContent = message;
-  notification.className = 'notification show';
-
-  if (type === 'error') notification.style.background = 'var(--danger)';
-  else if (type === 'success') notification.style.background = 'var(--success)';
-  else notification.style.background = 'var(--accent)';
-
-  setTimeout(() => { notification.className = 'notification'; }, 3000);
-}
-
-// Loading indicator
 function showLoading(show) {
-  document.getElementById('loading').style.display = show ? 'flex' : 'none';
+  document.getElementById("loading").style.display = show ? "flex" : "none";
 }
 
-// Save lists
-function saveLists() {
-  for (const key of Object.values(LIST_KEYS)) {
-    localStorage.setItem(key, JSON.stringify(window.lists[key]));
-  }
-}
-
-// Save all app data
-function saveAll() {
-  try {
-    const salary = document.getElementById('salary').value;
-
-    // Update current month data
-    if (monthsData[currentMonthIndex]) {
-      const monthEl = document.querySelector('.month-section.active');
-      if (monthEl) {
-        monthsData[currentMonthIndex] = readMonthFromDOM(monthEl);
-      }
-    }
-
-    const dataToSave = {
-      salary: salary,
-      months: monthsData,
-      lastSaved: new Date().toISOString()
-    };
-
-    localStorage.setItem('fin_tracker_data', JSON.stringify(dataToSave));
-
-    updateAll();
-    updateLastSaved();
-  } catch (error) {
-    console.error('Error saving data:', error);
-    showNotification('Error saving data', 'error');
-  }
-}
-
-// Read month DOM -> object (radio FIXED)
-function readMonthFromDOM(monthEl) {
-  const monthData = {
-    id: monthEl.id,
-    name: monthEl.querySelector('.month-name')?.value || 'New Month',
-    coreBills: [],
-    overdraftEntries: []
-  };
-
-  monthEl.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-    monthData.coreBills.push({
-      date: row.querySelector('.date-input')?.value || '',
-      method: row.querySelector('.payment-method')?.value || '',
-      company: row.querySelector('.company-input')?.value || '',
-      amount: row.querySelector('.amount-input')?.value || '0',
-      type: row.querySelector('.type-select')?.value || '',
-      paid: row.querySelector('input[type="radio"][data-field="paid"]:checked')?.value || 'not-paid'
-    });
-  });
-
-  monthEl.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-    monthData.overdraftEntries.push({
-      date: row.querySelector('.date-input')?.value || '',
-      method: row.querySelector('.payment-method')?.value || '',
-      company: row.querySelector('.company-input')?.value || '',
-      amount: row.querySelector('.amount-input')?.value || '0',
-      type: row.querySelector('.type-select')?.value || '',
-      currentBalance: row.querySelector('.current-balance')?.value || '',
-      outstandingBalance: row.querySelector('.outstanding-balance')?.value || '',
-      limit: row.querySelector('.limit-input')?.value || '',
-      paid: row.querySelector('input[type="radio"][data-field="paid"]:checked')?.value || 'not-paid'
-    });
-  });
-
-  return monthData;
-}
-
-// Last saved indicator
 function updateLastSaved(message) {
-  const el = document.getElementById('last-saved');
+  const el = document.getElementById("last-saved");
   if (message) el.textContent = message;
   else {
     const now = new Date();
-    el.textContent = `Saved: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+    el.textContent = `Saved: ${now.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
   }
 }
 
-/* =========================
-   GENERIC DROPDOWN MANAGER
-   ========================= */
-function showListManager(key, title) {
-  listManagerKey = key;
+/* =========================================================
+   Lists (Dropdown options) - Save/Load + Manager Modal
+========================================================= */
+function getDefaultLists() {
+  return {
+    [LIST_KEYS.methods]: [
+      "Cash","Debit Card","Credit Card","Bank Transfer","Direct Debit",
+      "Standing Order","PayPal","Apple Pay","Google Pay","Other"
+    ],
+    [LIST_KEYS.coreTypes]: [
+      "Utility","Rent/Mortgage","Insurance","Subscription","Loan","Other"
+    ],
+    [LIST_KEYS.debtTypes]: [
+      "Overdraft","BNPL","Finance Plan","Debt"
+    ]
+  };
+}
 
-  if (listManagerModal) listManagerModal.remove();
+function loadLists() {
+  const saved = localStorage.getItem(STORAGE.lists);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      const defs = getDefaultLists();
+      window.lists[LIST_KEYS.methods] = Array.isArray(parsed?.[LIST_KEYS.methods]) && parsed[LIST_KEYS.methods].length ? parsed[LIST_KEYS.methods] : defs[LIST_KEYS.methods];
+      window.lists[LIST_KEYS.coreTypes] = Array.isArray(parsed?.[LIST_KEYS.coreTypes]) && parsed[LIST_KEYS.coreTypes].length ? parsed[LIST_KEYS.coreTypes] : defs[LIST_KEYS.coreTypes];
+      window.lists[LIST_KEYS.debtTypes] = Array.isArray(parsed?.[LIST_KEYS.debtTypes]) && parsed[LIST_KEYS.debtTypes].length ? parsed[LIST_KEYS.debtTypes] : defs[LIST_KEYS.debtTypes];
+      return;
+    } catch {}
+  }
+  const defs = getDefaultLists();
+  window.lists = { ...defs };
+  saveLists();
+}
 
+function saveLists() {
+  localStorage.setItem(STORAGE.lists, JSON.stringify(window.lists));
+}
+
+function listTitle(key) {
+  if (key === LIST_KEYS.methods) return "Payment Methods";
+  if (key === LIST_KEYS.coreTypes) return "Core Bill Types";
+  if (key === LIST_KEYS.debtTypes) return "Debt/Overdraft Types";
+  return "Options";
+}
+
+function openListManager(key) {
+  closeListManager();
+
+  const title = listTitle(key);
   const items = window.lists[key] || [];
 
-  const modalHTML = `
+  const html = `
     <div class="modal">
       <div class="modal-header">
         <button class="modal-close" onclick="closeListManager()">←</button>
-        <h3>${title}</h3>
+        <h3>Manage: ${title}</h3>
         <button class="modal-close" onclick="closeListManager()">×</button>
       </div>
       <div class="modal-content">
-        <p style="margin-top: 0; opacity: 0.7; font-size: 14px;">Add, edit, or remove options</p>
+        <p style="margin-top:0;opacity:.7;font-size:14px;">
+          Add, edit, or remove options. These update ALL dropdowns.
+        </p>
 
-        <div id="list-items-container">
-          ${items.map((val, idx) => `
-            <div class="method-item" data-index="${idx}">
-              <input type="text" value="${escapeHtml(val)}"
-                oninput="updateListItem(${idx}, this.value)"
-                placeholder="Option">
-              <button class="delete-btn" onclick="removeListItem(${idx})" style="font-size: 14px;">Remove</button>
+        <div id="list-manager-container">
+          ${items.map((v, idx) => `
+            <div class="method-item">
+              <input type="text" value="${escapeHtml(v)}" oninput="updateListItem('${key}', ${idx}, this.value)" placeholder="Option name" />
+              <button class="delete-btn" style="font-size:14px;" onclick="removeListItem('${key}', ${idx})">Remove</button>
             </div>
-          `).join('')}
+          `).join("")}
         </div>
 
         <div class="add-method-form">
-          <input type="text" id="new-list-item" placeholder="New option" onkeypress="if(event.key==='Enter') addListItem()">
-          <button class="success" onclick="addListItem()">Add</button>
+          <input type="text" id="list-new-input" placeholder="New option" onkeypress="if(event.key==='Enter') addListItem('${key}')"/>
+          <button class="success" onclick="addListItem('${key}')">Add</button>
         </div>
       </div>
       <div class="modal-footer">
         <button onclick="closeListManager()">Close</button>
-        <button class="success" onclick="saveListAndClose()">Save & Close</button>
+        <button class="success" onclick="saveListManager('${key}')">Save & Close</button>
       </div>
     </div>
   `;
 
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.innerHTML = modalHTML;
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.innerHTML = html;
   overlay.onclick = (e) => { if (e.target === overlay) closeListManager(); };
-
   document.body.appendChild(overlay);
-  listManagerModal = overlay;
+  listManagerOverlay = overlay;
 
-  setTimeout(() => document.getElementById('new-list-item')?.focus(), 100);
+  setTimeout(() => document.getElementById("list-new-input")?.focus(), 80);
 }
 
 function closeListManager() {
-  if (listManagerModal) {
-    listManagerModal.remove();
-    listManagerModal = null;
-    listManagerKey = null;
+  if (listManagerOverlay) {
+    listManagerOverlay.remove();
+    listManagerOverlay = null;
   }
 }
 
-function saveListAndClose() {
-  // Clean + de-dupe + ensure at least 1 item
-  const key = listManagerKey;
-  let arr = (window.lists[key] || []).map(s => (s || '').trim()).filter(Boolean);
-  arr = Array.from(new Set(arr));
-
-  if (arr.length === 0) {
-    showNotification('You must keep at least one option.', 'error');
-    return;
-  }
-
-  window.lists[key] = arr;
+function saveListManager(key) {
+  // Clean: trim + drop empty + unique
+  const cleaned = (window.lists[key] || [])
+    .map(x => (x || "").trim())
+    .filter(Boolean);
+  window.lists[key] = Array.from(new Set(cleaned));
   saveLists();
-
-  // Re-render dropdowns on page
-  renderAllDropdowns();
-
-  closeListManager();
+  renderAllDynamicDropdowns();
   saveAll();
-  showNotification('Options saved', 'success');
+  closeListManager();
+  showNotification("Options saved", "success");
 }
 
-function updateListItem(index, value) {
-  if (!listManagerKey) return;
-  window.lists[listManagerKey][index] = value;
+function updateListItem(key, index, value) {
+  if (!Array.isArray(window.lists[key])) window.lists[key] = [];
+  window.lists[key][index] = value;
 }
 
-function removeListItem(index) {
-  if (!listManagerKey) return;
-  if (window.lists[listManagerKey].length <= 1) {
-    showNotification('You must keep at least one option.', 'error');
+function removeListItem(key, index) {
+  if (!Array.isArray(window.lists[key])) return;
+  if (window.lists[key].length <= 1) {
+    showNotification("You must keep at least one option.", "error");
     return;
   }
-  window.lists[listManagerKey].splice(index, 1);
+  window.lists[key].splice(index, 1);
 
-  // Repaint modal list
-  const container = document.getElementById('list-items-container');
-  if (!container) return;
-  container.innerHTML = window.lists[listManagerKey].map((val, idx) => `
-    <div class="method-item" data-index="${idx}">
-      <input type="text" value="${escapeHtml(val)}"
-        oninput="updateListItem(${idx}, this.value)"
-        placeholder="Option">
-      <button class="delete-btn" onclick="removeListItem(${idx})" style="font-size: 14px;">Remove</button>
-    </div>
-  `).join('');
+  // re-render within modal
+  if (listManagerOverlay) openListManager(key);
 }
 
-function addListItem() {
-  if (!listManagerKey) return;
-  const input = document.getElementById('new-list-item');
-  const value = (input.value || '').trim();
+function addListItem(key) {
+  const input = document.getElementById("list-new-input");
+  const value = (input?.value || "").trim();
   if (!value) return;
 
-  const existing = (window.lists[listManagerKey] || []).map(v => (v || '').trim().toLowerCase());
-  if (existing.includes(value.toLowerCase())) {
-    showNotification('That option already exists.', 'error');
+  const arr = window.lists[key] || [];
+  if (arr.map(x => (x||"").trim().toLowerCase()).includes(value.toLowerCase())) {
+    showNotification("This option already exists.", "error");
     return;
   }
 
-  window.lists[listManagerKey].push(value);
-
-  const container = document.getElementById('list-items-container');
-  if (container) {
-    const idx = window.lists[listManagerKey].length - 1;
-    container.innerHTML += `
-      <div class="method-item" data-index="${idx}">
-        <input type="text" value="${escapeHtml(value)}"
-          oninput="updateListItem(${idx}, this.value)"
-          placeholder="Option">
-        <button class="delete-btn" onclick="removeListItem(${idx})" style="font-size: 14px;">Remove</button>
-      </div>
-    `;
-  }
-
-  input.value = '';
-  input.focus();
+  arr.push(value);
+  window.lists[key] = arr;
+  input.value = "";
+  openListManager(key);
 }
 
+/* =========================================================
+   Safe HTML
+========================================================= */
 function escapeHtml(str) {
-  return String(str ?? '').replace(/[&<>"']/g, (m) => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-  }[m]));
+  return String(str ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-// Dropdown builders
-function getSelectHTML(key, current = '', cssClass = '', manageLabel = '⚙ Manage...') {
-  const options = window.lists[key] || [];
+/* =========================================================
+   App Init + Data Load
+========================================================= */
+function initApp() {
+  showLoading(true);
+
+  try {
+    // Dark mode
+    const dm = localStorage.getItem(STORAGE.dark);
+    if (dm === "true") {
+      document.body.classList.add("dark");
+      document.querySelector(".dark-toggle").textContent = "☀️ Light";
+    }
+
+    // Lists
+    loadLists();
+
+    // Data
+    const saved = localStorage.getItem(STORAGE.data);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.salary != null) document.getElementById("salary").value = data.salary;
+        if (Array.isArray(data.months)) monthsData = data.months;
+      } catch (e) {
+        console.error("Error parsing saved data:", e);
+        showNotification("Error loading saved data. Starting fresh.", "error");
+        monthsData = [];
+      }
+    }
+
+    if (monthsData.length > 0) {
+      currentMonthIndex = Math.min(currentMonthIndex, monthsData.length - 1);
+      renderCurrentMonth();
+      document.getElementById("pagination").style.display = "flex";
+      document.getElementById("empty-state").style.display = "none";
+    } else {
+      document.getElementById("empty-state").style.display = "block";
+      document.getElementById("pagination").style.display = "none";
+    }
+
+    updateLastSaved("Ready");
+  } catch (e) {
+    console.error(e);
+    showNotification("Error loading app. Please refresh.", "error");
+  } finally {
+    setTimeout(() => showLoading(false), 400);
+  }
+}
+
+/* =========================================================
+   Dropdown builders (methods + types) with Manage option
+========================================================= */
+function getSelectHTML(key, current="") {
+  const options = (window.lists[key] || []);
+  const manageVal = `__manage__${key}`;
+
   return `
-    <select class="${cssClass}" data-list-key="${key}" onchange="handleSelectChange(this)">
+    <select data-dynamic-select="1" data-list-key="${key}" onchange="handleDynamicSelectChange(this)">
       <option value=""></option>
-      ${options.map(o => `<option value="${escapeHtml(o)}" ${o === current ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('')}
-      <option value="__manage">${manageLabel}</option>
+      ${options.map(o => {
+        const val = escapeHtml(o);
+        const sel = (o === current) ? "selected" : "";
+        return `<option value="${val}" ${sel}>${val}</option>`;
+      }).join("")}
+      <option value="${manageVal}">⚙ Manage...</option>
     </select>
   `;
 }
 
-function handleSelectChange(select) {
-  if (select.value === '__manage') {
-    const key = select.getAttribute('data-list-key');
-    select.value = '';
-    if (key === LIST_KEYS.methods) showListManager(LIST_KEYS.methods, 'Manage Payment Methods');
-    else if (key === LIST_KEYS.coreTypes) showListManager(LIST_KEYS.coreTypes, 'Manage Core Bill Types');
-    else if (key === LIST_KEYS.debtTypes) showListManager(LIST_KEYS.debtTypes, 'Manage Debt/Overdraft Types');
+function handleDynamicSelectChange(select) {
+  const key = select.getAttribute("data-list-key");
+  const val = select.value;
+
+  if (val && val.startsWith("__manage__")) {
+    select.value = "";
+    openListManager(key);
     return;
   }
   saveAll();
 }
 
-function renderAllDropdowns() {
-  // Rebuild all selects that are tied to lists, preserving current value
-  document.querySelectorAll('select[data-list-key]').forEach(sel => {
-    const key = sel.getAttribute('data-list-key');
+function renderAllDynamicDropdowns() {
+  // Rebuild every dynamic select while preserving current value
+  document.querySelectorAll('select[data-dynamic-select="1"]').forEach(sel => {
+    const key = sel.getAttribute("data-list-key");
     const current = sel.value;
-    const cls = sel.className;
-    const manageLabel = (key === LIST_KEYS.methods) ? '⚙ Manage Methods...' : '⚙ Manage Options...';
-    sel.outerHTML = getSelectHTML(key, current, cls, manageLabel);
+    sel.outerHTML = getSelectHTML(key, current);
   });
 }
 
-/* =========================
-   ROW TEMPLATES (RADIO FIX)
-   ========================= */
-function getCoreBillsRow(data = {}) {
-  const group = uid('paid-core');
+/* =========================================================
+   Row Templates (fix radio group collisions with unique name)
+========================================================= */
+function ensureRowId(obj) {
+  if (!obj) obj = {};
+  if (!obj._rid) obj._rid = uid("row");
+  return obj;
+}
+
+function getPaidRadioGroup(rowId, paidValue="not-paid") {
+  const name = `paid_${rowId}`;
+  const paidChecked = paidValue === "paid" ? "checked" : "";
+  const notPaidChecked = paidValue !== "paid" ? "checked" : "";
   return `
-    <tr>
-      <td><input type="date" class="date-input" value="${escapeHtml(data.date || '')}" oninput="saveAll()"></td>
-      <td>${getSelectHTML(LIST_KEYS.methods, data.method || '', 'payment-method', '⚙ Manage Methods...')}</td>
-      <td><input type="text" class="company-input" value="${escapeHtml(data.company || '')}" placeholder="Company" oninput="saveAll()"></td>
-      <td><input type="number" step="0.01" value="${escapeHtml(data.amount ?? '0')}" class="amount-input" oninput="saveAll()"></td>
-      <td>
-        ${getSelectHTML(LIST_KEYS.coreTypes, data.type || '', 'type-select', '⚙ Manage Options...')}
-      </td>
-      <td class="paid-status">
-        <div class="radio-group">
-          <label><input type="radio" data-field="paid" name="${group}" value="paid" ${data.paid === 'paid' ? 'checked' : ''} onchange="saveAll()"> Paid</label>
-          <label><input type="radio" data-field="paid" name="${group}" value="not-paid" ${data.paid !== 'paid' ? 'checked' : ''} onchange="saveAll()"> Not Paid</label>
-        </div>
-      </td>
-      <td class="actions">
-        <button class="delete-btn" onclick="deleteRow(this)" title="Delete row">✕</button>
-      </td>
+    <div class="radio-group" data-paid-group="${escapeHtml(name)}">
+      <label><input type="radio" name="${escapeHtml(name)}" value="paid" ${paidChecked} onchange="saveAll()"> Paid</label>
+      <label><input type="radio" name="${escapeHtml(name)}" value="not-paid" ${notPaidChecked} onchange="saveAll()"> Not Paid</label>
+    </div>
+  `;
+}
+
+function getCoreBillsRow(data = {}) {
+  data = ensureRowId(data);
+  return `
+    <tr data-rid="${escapeHtml(data._rid)}">
+      <td><input type="date" class="date-input" value="${escapeHtml(data.date || "")}" oninput="saveAll()"></td>
+      <td>${getSelectHTML(LIST_KEYS.methods, data.method || "")}</td>
+      <td><input type="text" class="company-input" value="${escapeHtml(data.company || "")}" placeholder="Company" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${escapeHtml(data.amount ?? "0")}" class="amount-input" oninput="saveAll()"></td>
+      <td>${getSelectHTML(LIST_KEYS.coreTypes, data.type || "")}</td>
+      <td class="paid-status">${getPaidRadioGroup(data._rid, data.paid || "not-paid")}</td>
+      <td class="actions"><button class="delete-btn" onclick="deleteRow(this)" title="Delete row">✕</button></td>
     </tr>
   `;
 }
 
 function getOverdraftRow(data = {}) {
-  const group = uid('paid-debt');
+  data = ensureRowId(data);
   return `
-    <tr>
-      <td><input type="date" class="date-input" value="${escapeHtml(data.date || '')}" oninput="saveAll()"></td>
-      <td>${getSelectHTML(LIST_KEYS.methods, data.method || '', 'payment-method', '⚙ Manage Methods...')}</td>
-      <td><input type="text" class="company-input" value="${escapeHtml(data.company || '')}" placeholder="Bank/Company" oninput="saveAll()"></td>
-      <td><input type="number" step="0.01" value="${escapeHtml(data.amount ?? '0')}" class="amount-input" oninput="saveAll()"></td>
-      <td>
-        ${getSelectHTML(LIST_KEYS.debtTypes, data.type || '', 'type-select', '⚙ Manage Options...')}
-      </td>
-      <td><input type="number" step="0.01" value="${escapeHtml(data.currentBalance || '')}" class="current-balance" placeholder="Current Balance" oninput="saveAll()"></td>
-      <td><input type="number" step="0.01" value="${escapeHtml(data.outstandingBalance || '')}" class="outstanding-balance" placeholder="Outstanding Balance" oninput="saveAll()"></td>
-      <td><input type="number" step="0.01" value="${escapeHtml(data.limit || '')}" class="limit-input" placeholder="Limit" oninput="saveAll()"></td>
-      <td class="paid-status">
-        <div class="radio-group">
-          <label><input type="radio" data-field="paid" name="${group}" value="paid" ${data.paid === 'paid' ? 'checked' : ''} onchange="saveAll()"> Paid</label>
-          <label><input type="radio" data-field="paid" name="${group}" value="not-paid" ${data.paid !== 'paid' ? 'checked' : ''} onchange="saveAll()"> Not Paid</label>
-        </div>
-      </td>
-      <td class="actions">
-        <button class="delete-btn" onclick="deleteRow(this)" title="Delete row">✕</button>
-      </td>
+    <tr data-rid="${escapeHtml(data._rid)}">
+      <td><input type="date" class="date-input" value="${escapeHtml(data.date || "")}" oninput="saveAll()"></td>
+      <td>${getSelectHTML(LIST_KEYS.methods, data.method || "")}</td>
+      <td><input type="text" class="company-input" value="${escapeHtml(data.company || "")}" placeholder="Bank/Company" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${escapeHtml(data.amount ?? "0")}" class="amount-input" oninput="saveAll()"></td>
+      <td>${getSelectHTML(LIST_KEYS.debtTypes, data.type || "")}</td>
+      <td><input type="number" step="0.01" value="${escapeHtml(data.currentBalance || "")}" class="current-balance" placeholder="Current Balance" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${escapeHtml(data.outstandingBalance || "")}" class="outstanding-balance" placeholder="Outstanding Balance" oninput="saveAll()"></td>
+      <td><input type="number" step="0.01" value="${escapeHtml(data.limit || "")}" class="limit-input" placeholder="Limit" oninput="saveAll()"></td>
+      <td class="paid-status">${getPaidRadioGroup(data._rid, data.paid || "not-paid")}</td>
+      <td class="actions"><button class="delete-btn" onclick="deleteRow(this)" title="Delete row">✕</button></td>
     </tr>
   `;
 }
 
-/* =========================
-   MONTH RENDERING + PAGING
-   ========================= */
-function renderCurrentMonth() {
-  const container = document.getElementById('months-container');
-
-  if (monthsData.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state" id="empty-state">
-        <h3>No months added yet</h3>
-        <p>Click "Add Month" to start tracking your finances</p>
-      </div>`;
-    document.getElementById('pagination').style.display = 'none';
-    return;
-  }
-
-  document.getElementById('empty-state')?.style && (document.getElementById('empty-state').style.display = 'none');
-  document.getElementById('pagination').style.display = 'flex';
-
-  container.innerHTML = '';
-
-  const monthData = monthsData[currentMonthIndex];
-  const monthEl = createMonthElement(monthData);
-  monthEl.classList.add('active');
-  container.appendChild(monthEl);
-
-  updateAll();
-  updatePagination();
-}
-
+/* =========================================================
+   Month Rendering + Pagination
+========================================================= */
 function createMonthElement(monthData) {
-  const div = document.createElement('div');
-  div.className = 'month-section';
-  div.id = monthData.id || ('month-' + Date.now());
+  const div = document.createElement("div");
+  div.className = "month-section";
+  div.id = monthData.id || uid("month");
 
-  const coreRows = (monthData.coreBills && monthData.coreBills.length)
-    ? monthData.coreBills.map(b => getCoreBillsRow(b)).join('')
+  const coreRows = (Array.isArray(monthData.coreBills) && monthData.coreBills.length)
+    ? monthData.coreBills.map(b => getCoreBillsRow(b)).join("")
     : getCoreBillsRow();
 
-  const debtRows = (monthData.overdraftEntries && monthData.overdraftEntries.length)
-    ? monthData.overdraftEntries.map(e => getOverdraftRow(e)).join('')
+  const debtRows = (Array.isArray(monthData.overdraftEntries) && monthData.overdraftEntries.length)
+    ? monthData.overdraftEntries.map(e => getOverdraftRow(e)).join("")
     : getOverdraftRow();
 
   div.innerHTML = `
     <div class="month-header">
-      <input type="text" class="month-name" value="${escapeHtml(monthData.name || 'New Month')}" oninput="saveAll()">
+      <input type="text" class="month-name" value="${escapeHtml(monthData.name || "New Month")}" oninput="saveAll()">
       <div class="month-actions">
         <button class="warning" onclick="clearMonth(${currentMonthIndex})">🗑️ Clear</button>
         <button class="secondary" onclick="exportMonthCSV(${currentMonthIndex})">📊 CSV</button>
@@ -1042,11 +935,11 @@ function createMonthElement(monthData) {
           <thead>
             <tr>
               <th>Date</th>
-              <th>Payment Method</th>
+              <th>Method</th>
               <th>Company</th>
               <th>Amount (£)</th>
-              <th>Payment Type</th>
-              <th>Paid Status</th>
+              <th>Type</th>
+              <th>Paid</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -1054,10 +947,6 @@ function createMonthElement(monthData) {
         </table>
       </div>
       <button class="secondary" onclick="addCoreBillsRow(this)" style="margin-top: 8px;">+ Add Bill</button>
-      <div style="margin-top: 10px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="secondary" onclick="showListManager('${LIST_KEYS.methods}', 'Manage Payment Methods')">⚙ Manage Payment Methods</button>
-        <button class="secondary" onclick="showListManager('${LIST_KEYS.coreTypes}', 'Manage Core Bill Types')">⚙ Manage Core Bill Types</button>
-      </div>
     </div>
 
     <div class="table-section">
@@ -1067,14 +956,14 @@ function createMonthElement(monthData) {
           <thead>
             <tr>
               <th>Date</th>
-              <th>Payment Method</th>
+              <th>Method</th>
               <th>Bank/Company</th>
               <th>Amount (£)</th>
-              <th>Payment Type</th>
+              <th>Type</th>
               <th>Current Balance</th>
-              <th>Outstanding Balance</th>
+              <th>Outstanding</th>
               <th>Limit</th>
-              <th>Paid Status</th>
+              <th>Paid</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -1082,37 +971,49 @@ function createMonthElement(monthData) {
         </table>
       </div>
       <button class="secondary" onclick="addOverdraftRow(this)" style="margin-top: 8px;">+ Add Entry</button>
-      <span class="help-text">For Overdraft: Current Balance = current amount, Outstanding = remaining, Limit = max allowed</span>
-      <div style="margin-top: 10px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="secondary" onclick="showListManager('${LIST_KEYS.debtTypes}', 'Manage Debt/Overdraft Types')">⚙ Manage Debt/Overdraft Types</button>
-      </div>
+      <span class="help-text">Overdraft: Current Balance = current amount, Outstanding = remaining, Limit = max allowed</span>
     </div>
 
     <div class="summary">
-      <div class="summary-item">
-        <span>Total Core Bills</span>
-        <b class="core-total">£0.00</b>
-      </div>
-      <div class="summary-item">
-        <span>Total Overdraft/Debt</span>
-        <b class="overdraft-total">£0.00</b>
-      </div>
-      <div class="summary-item">
-        <span>Remaining Salary</span>
-        <b class="remaining-salary">£0.00</b>
-      </div>
+      <div class="summary-item"><span>Total Core Bills</span><b class="core-total">£0.00</b></div>
+      <div class="summary-item"><span>Total Overdraft/Debt</span><b class="overdraft-total">£0.00</b></div>
+      <div class="summary-item"><span>Remaining Salary</span><b class="remaining-salary">£0.00</b></div>
     </div>
   `;
-
   return div;
 }
 
-// Pagination
-function updatePagination() {
-  const pageInfo = document.getElementById('page-info');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
+function renderCurrentMonth() {
+  const container = document.getElementById("months-container");
 
+  if (monthsData.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state" id="empty-state">
+        <h3>No months added yet</h3>
+        <p>Click "Add Month" to start tracking your finances</p>
+      </div>
+    `;
+    document.getElementById("pagination").style.display = "none";
+    return;
+  }
+
+  document.getElementById("empty-state")?.style && (document.getElementById("empty-state").style.display = "none");
+  document.getElementById("pagination").style.display = "flex";
+
+  container.innerHTML = "";
+  const monthData = monthsData[currentMonthIndex];
+  const monthEl = createMonthElement(monthData);
+  monthEl.classList.add("active");
+  container.appendChild(monthEl);
+
+  updateAll();
+  updatePagination();
+}
+
+function updatePagination() {
+  const pageInfo = document.getElementById("page-info");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
   pageInfo.textContent = `Month ${currentMonthIndex + 1} of ${monthsData.length}`;
   prevBtn.disabled = currentMonthIndex === 0;
   nextBtn.disabled = currentMonthIndex === monthsData.length - 1;
@@ -1134,222 +1035,267 @@ function nextMonth() {
   }
 }
 
+/* =========================================================
+   Save/Load Month Data (from DOM)
+========================================================= */
+function getPaidValueFromRow(row) {
+  const rid = row.getAttribute("data-rid");
+  const name = `paid_${rid}`;
+  const checked = row.querySelector(`input[name="${CSS.escape(name)}"]:checked`);
+  return checked ? checked.value : "not-paid";
+}
+
 function saveCurrentMonthData() {
-  const monthEl = document.querySelector('.month-section.active');
-  if (monthEl && monthsData[currentMonthIndex]) {
-    monthsData[currentMonthIndex] = readMonthFromDOM(monthEl);
+  const monthEl = document.querySelector(".month-section.active");
+  if (!monthEl || !monthsData[currentMonthIndex]) return;
+
+  const monthData = {
+    id: monthEl.id,
+    name: monthEl.querySelector(".month-name")?.value || "New Month",
+    coreBills: [],
+    overdraftEntries: []
+  };
+
+  monthEl.querySelectorAll("#core-bills-table tbody tr").forEach(row => {
+    const rid = row.getAttribute("data-rid") || uid("row");
+    monthData.coreBills.push({
+      _rid: rid,
+      date: row.querySelector(".date-input")?.value || "",
+      method: row.querySelector(`select[data-list-key="${CSS.escape(LIST_KEYS.methods)}"]`)?.value || "",
+      company: row.querySelector(".company-input")?.value || "",
+      amount: row.querySelector(".amount-input")?.value || "0",
+      type: row.querySelector(`select[data-list-key="${CSS.escape(LIST_KEYS.coreTypes)}"]`)?.value || "",
+      paid: getPaidValueFromRow(row)
+    });
+  });
+
+  monthEl.querySelectorAll("#overdraft-table tbody tr").forEach(row => {
+    const rid = row.getAttribute("data-rid") || uid("row");
+    monthData.overdraftEntries.push({
+      _rid: rid,
+      date: row.querySelector(".date-input")?.value || "",
+      method: row.querySelector(`select[data-list-key="${CSS.escape(LIST_KEYS.methods)}"]`)?.value || "",
+      company: row.querySelector(".company-input")?.value || "",
+      amount: row.querySelector(".amount-input")?.value || "0",
+      type: row.querySelector(`select[data-list-key="${CSS.escape(LIST_KEYS.debtTypes)}"]`)?.value || "",
+      currentBalance: row.querySelector(".current-balance")?.value || "",
+      outstandingBalance: row.querySelector(".outstanding-balance")?.value || "",
+      limit: row.querySelector(".limit-input")?.value || "",
+      paid: getPaidValueFromRow(row)
+    });
+  });
+
+  monthsData[currentMonthIndex] = monthData;
+}
+
+function saveAll() {
+  try {
+    saveCurrentMonthData();
+
+    const payload = {
+      version: 2,
+      salary: document.getElementById("salary").value || "0",
+      months: monthsData,
+      lastSaved: new Date().toISOString()
+    };
+
+    localStorage.setItem(STORAGE.data, JSON.stringify(payload));
+    updateAll();
+    updateLastSaved();
+  } catch (e) {
+    console.error("saveAll error:", e);
+    showNotification("Error saving data", "error");
   }
 }
 
-// Row operations
+/* =========================================================
+   Row Operations
+========================================================= */
 function addCoreBillsRow(button) {
-  const tbody = button.previousElementSibling.querySelector('tbody');
-  tbody.insertAdjacentHTML('beforeend', getCoreBillsRow());
+  const tbody = button.previousElementSibling.querySelector("tbody");
+  tbody.insertAdjacentHTML("beforeend", getCoreBillsRow());
   saveAll();
 }
 
 function addOverdraftRow(button) {
-  const tbody = button.previousElementSibling.querySelector('tbody');
-  tbody.insertAdjacentHTML('beforeend', getOverdraftRow());
+  const tbody = button.previousElementSibling.querySelector("tbody");
+  tbody.insertAdjacentHTML("beforeend", getOverdraftRow());
   saveAll();
 }
 
 function deleteRow(button) {
-  const row = button.closest('tr');
-  if (row.parentElement.children.length > 1) {
-    row.remove();
-    saveAll();
-  } else {
-    showNotification('Cannot delete the last row. Clear the month instead.', 'error');
+  const row = button.closest("tr");
+  if (!row) return;
+  const tbody = row.parentElement;
+  if (tbody.children.length <= 1) {
+    showNotification("Cannot delete the last row. Clear the month instead.", "error");
+    return;
   }
+  row.remove();
+  saveAll();
 }
 
-// Month operations
+/* =========================================================
+   Month Operations
+========================================================= */
 function addMonth() {
   saveCurrentMonthData();
+  const monthName = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
-  const monthId = 'month-' + Date.now();
-  const monthName = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  monthsData.push({
+    id: uid("month"),
+    name: monthName,
+    coreBills: [],
+    overdraftEntries: []
+  });
 
-  const newMonth = { id: monthId, name: monthName, coreBills: [], overdraftEntries: [] };
-  monthsData.push(newMonth);
   currentMonthIndex = monthsData.length - 1;
-
   renderCurrentMonth();
-  document.getElementById('empty-state').style.display = 'none';
-  document.getElementById('pagination').style.display = 'flex';
-
+  document.getElementById("empty-state").style.display = "none";
+  document.getElementById("pagination").style.display = "flex";
   saveAll();
-  showNotification('Month added successfully', 'success');
+  showNotification("Month added successfully", "success");
 }
 
 function clearMonth(index) {
-  if (confirm('Clear all data in this month? This cannot be undone.')) {
-    if (monthsData[index]) {
-      monthsData[index].coreBills = [];
-      monthsData[index].overdraftEntries = [];
-      renderCurrentMonth();
-      saveAll();
-      showNotification('Month cleared', 'success');
-    }
-  }
+  if (!monthsData[index]) return;
+  if (!confirm("Clear all data in this month? This cannot be undone.")) return;
+
+  monthsData[index].coreBills = [];
+  monthsData[index].overdraftEntries = [];
+  renderCurrentMonth();
+  saveAll();
+  showNotification("Month cleared", "success");
 }
 
 function deleteMonth(index) {
-  if (confirm('Delete this entire month? This cannot be undone.')) {
-    monthsData.splice(index, 1);
+  if (!confirm("Delete this entire month? This cannot be undone.")) return;
+  monthsData.splice(index, 1);
 
-    if (currentMonthIndex >= monthsData.length) {
-      currentMonthIndex = Math.max(0, monthsData.length - 1);
-    }
+  if (currentMonthIndex >= monthsData.length) currentMonthIndex = Math.max(0, monthsData.length - 1);
 
-    if (monthsData.length === 0) {
-      document.getElementById('pagination').style.display = 'none';
-      document.getElementById('months-container').innerHTML = `
-        <div class="empty-state" id="empty-state">
-          <h3>No months added yet</h3>
-          <p>Click "Add Month" to start tracking your finances</p>
-        </div>`;
-    } else {
-      renderCurrentMonth();
-    }
-
-    saveAll();
-    showNotification('Month deleted', 'success');
+  if (monthsData.length === 0) {
+    document.getElementById("months-container").innerHTML = `
+      <div class="empty-state" id="empty-state">
+        <h3>No months added yet</h3>
+        <p>Click "Add Month" to start tracking your finances</p>
+      </div>
+    `;
+    document.getElementById("pagination").style.display = "none";
+  } else {
+    renderCurrentMonth();
   }
+
+  saveAll();
+  showNotification("Month deleted", "success");
 }
 
-// Calculations
-function calculateMonthTotals(month) {
+/* =========================================================
+   Calculations
+========================================================= */
+function calculateMonthTotals(monthEl) {
   let coreTotal = 0;
   let overdraftTotal = 0;
 
-  month.querySelectorAll('#core-bills-table tbody tr').forEach(row => {
-    coreTotal += n(row.querySelector('.amount-input')?.value);
+  monthEl.querySelectorAll("#core-bills-table tbody tr").forEach(row => {
+    const v = parseFloat(row.querySelector(".amount-input")?.value || "0") || 0;
+    coreTotal += v;
   });
 
-  month.querySelectorAll('#overdraft-table tbody tr').forEach(row => {
-    overdraftTotal += n(row.querySelector('.amount-input')?.value);
+  monthEl.querySelectorAll("#overdraft-table tbody tr").forEach(row => {
+    const v = parseFloat(row.querySelector(".amount-input")?.value || "0") || 0;
+    overdraftTotal += v;
   });
 
-  const salary = n(document.getElementById('salary').value);
+  const salary = parseFloat(document.getElementById("salary").value || "0") || 0;
   const remaining = salary - coreTotal - overdraftTotal;
 
-  month.querySelector('.core-total').textContent = '£' + coreTotal.toFixed(2);
-  month.querySelector('.overdraft-total').textContent = '£' + overdraftTotal.toFixed(2);
-  month.querySelector('.remaining-salary').textContent = '£' + remaining.toFixed(2);
+  monthEl.querySelector(".core-total").textContent = `£${coreTotal.toFixed(2)}`;
+  monthEl.querySelector(".overdraft-total").textContent = `£${overdraftTotal.toFixed(2)}`;
+  monthEl.querySelector(".remaining-salary").textContent = `£${remaining.toFixed(2)}`;
 }
 
 function updateAll() {
-  const monthEl = document.querySelector('.month-section.active');
+  const monthEl = document.querySelector(".month-section.active");
   if (monthEl) calculateMonthTotals(monthEl);
 }
 
-/* =========================
-   PAGE NAVIGATION
-   ========================= */
+/* =========================================================
+   Navigation
+========================================================= */
 function showPage(page) {
-  const homeBtn = document.getElementById('nav-home');
-  const reportsBtn = document.getElementById('nav-reports');
-  const homePage = document.getElementById('home-page');
-  const reportsPage = document.getElementById('reports-page');
+  const homeBtn = document.getElementById("nav-home");
+  const reportsBtn = document.getElementById("nav-reports");
+  const homePage = document.getElementById("home-page");
+  const reportsPage = document.getElementById("reports-page");
 
-  if (page === 'home') {
-    homeBtn.classList.add('active');
-    reportsBtn.classList.remove('active');
-    homePage.style.display = 'block';
-    reportsPage.classList.remove('active');
-  } else if (page === 'reports') {
-    homeBtn.classList.remove('active');
-    reportsBtn.classList.add('active');
-    homePage.style.display = 'none';
-    reportsPage.classList.add('active');
+  if (page === "home") {
+    homeBtn.classList.add("active");
+    reportsBtn.classList.remove("active");
+    homePage.style.display = "block";
+    reportsPage.classList.remove("active");
+  } else {
+    homeBtn.classList.remove("active");
+    reportsBtn.classList.add("active");
+    homePage.style.display = "none";
+    reportsPage.classList.add("active");
   }
 }
 
-/* =========================
-   REPORTS (unchanged logic)
-   ========================= */
+/* =========================================================
+   Reports (same as your originals, adjusted to new lists)
+========================================================= */
 function showMonthlySummaryReport() {
-  if (monthsData.length === 0) {
-    showNotification('No data available for reports', 'error');
-    return;
-  }
+  if (monthsData.length === 0) { showNotification("No data available for reports", "error"); return; }
 
   const modalHTML = `
-    <div class="modal reports-modal">
+    <div class="modal">
       <div class="modal-header">
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">←</button>
         <h3>📊 Monthly Summary Report</h3>
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
       </div>
-      <div class="modal-content">
-        ${generateMonthlySummaryHTML()}
-      </div>
+      <div class="modal-content">${generateMonthlySummaryHTML()}</div>
       <div class="modal-footer">
         <button class="success" onclick="exportPDF()">Export PDF</button>
         <button onclick="this.closest('.modal-overlay').remove()">Close</button>
       </div>
     </div>
   `;
-
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
   overlay.innerHTML = modalHTML;
   document.body.appendChild(overlay);
 }
 
 function generateMonthlySummaryHTML() {
-  let html = '';
-  const salary = n(document.getElementById('salary').value);
-
-  monthsData.forEach((month) => {
-    let coreTotal = 0;
-    let overdraftTotal = 0;
-
-    (month.coreBills || []).forEach(bill => coreTotal += n(bill.amount));
-    (month.overdraftEntries || []).forEach(entry => overdraftTotal += n(entry.amount));
-
-    const remaining = salary - coreTotal - overdraftTotal;
-
-    html += `
-      <div class="report-section">
-        <h4>${escapeHtml(month.name)}</h4>
-        <div class="summary" style="margin: 0;">
-          <div class="summary-item">
-            <span>Core Bills</span>
-            <b>£${coreTotal.toFixed(2)}</b>
-          </div>
-          <div class="summary-item">
-            <span>Overdraft/Debt</span>
-            <b>£${overdraftTotal.toFixed(2)}</b>
-          </div>
-          <div class="summary-item">
-            <span>Remaining</span>
-            <b style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}">
-              £${remaining.toFixed(2)}
-            </b>
-          </div>
+  const salary = parseFloat(document.getElementById("salary").value || "0") || 0;
+  return monthsData.map(m => {
+    const coreTotal = (m.coreBills || []).reduce((s, b) => s + (parseFloat(b.amount || 0) || 0), 0);
+    const debtTotal = (m.overdraftEntries || []).reduce((s, e) => s + (parseFloat(e.amount || 0) || 0), 0);
+    const remaining = salary - coreTotal - debtTotal;
+    return `
+      <div style="margin-bottom:18px;">
+        <h4 style="margin:0 0 10px 0;">${escapeHtml(m.name || "Month")}</h4>
+        <div class="summary" style="margin:0;">
+          <div class="summary-item"><span>Core Bills</span><b>£${coreTotal.toFixed(2)}</b></div>
+          <div class="summary-item"><span>Overdraft/Debt</span><b>£${debtTotal.toFixed(2)}</b></div>
+          <div class="summary-item"><span>Remaining</span><b style="color:${remaining >= 0 ? "var(--success)" : "var(--danger)"}">£${remaining.toFixed(2)}</b></div>
         </div>
       </div>
     `;
-  });
-
-  return html;
+  }).join("");
 }
 
 function showCategoryBreakdown() {
-  if (monthsData.length === 0) {
-    showNotification('No data available for reports', 'error');
-    return;
-  }
+  if (monthsData.length === 0) { showNotification("No data available for reports", "error"); return; }
 
   const categories = {};
-  monthsData.forEach(month => {
-    (month.coreBills || []).forEach(bill => {
-      const type = bill.type || 'Uncategorized';
-      const amount = n(bill.amount);
-      categories[type] = (categories[type] || 0) + amount;
+  monthsData.forEach(m => {
+    (m.coreBills || []).forEach(b => {
+      const type = b.type || "Uncategorized";
+      const amt = parseFloat(b.amount || 0) || 0;
+      categories[type] = (categories[type] || 0) + amt;
     });
   });
 
@@ -1361,42 +1307,37 @@ function showCategoryBreakdown() {
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
       </div>
       <div class="modal-content">
-        ${Object.entries(categories).map(([category, total]) => `
-          <div style="margin-bottom: 10px; padding: 10px; background: var(--soft); border-radius: var(--radius);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span>${escapeHtml(category)}</span>
-              <b>£${total.toFixed(2)}</b>
+        ${Object.entries(categories).sort((a,b)=>b[1]-a[1]).map(([cat,total]) => `
+          <div style="margin-bottom:10px;padding:10px;background:var(--soft);border-radius:var(--radius);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>${escapeHtml(cat)}</span><b>£${total.toFixed(2)}</b>
             </div>
           </div>
-        `).join('')}
+        `).join("")}
       </div>
       <div class="modal-footer">
         <button onclick="this.closest('.modal-overlay').remove()">Close</button>
       </div>
     </div>
   `;
-
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
   overlay.innerHTML = modalHTML;
   document.body.appendChild(overlay);
 }
 
 function showPaymentMethodAnalysis() {
-  if (monthsData.length === 0) {
-    showNotification('No data available for reports', 'error');
-    return;
-  }
+  if (monthsData.length === 0) { showNotification("No data available for reports", "error"); return; }
 
   const methods = {};
-  monthsData.forEach(month => {
-    (month.coreBills || []).forEach(bill => {
-      const method = bill.method || 'Not specified';
-      methods[method] = (methods[method] || 0) + n(bill.amount);
+  monthsData.forEach(m => {
+    (m.coreBills || []).forEach(b => {
+      const k = b.method || "Not specified";
+      methods[k] = (methods[k] || 0) + (parseFloat(b.amount || 0) || 0);
     });
-    (month.overdraftEntries || []).forEach(entry => {
-      const method = entry.method || 'Not specified';
-      methods[method] = (methods[method] || 0) + n(entry.amount);
+    (m.overdraftEntries || []).forEach(e => {
+      const k = e.method || "Not specified";
+      methods[k] = (methods[k] || 0) + (parseFloat(e.amount || 0) || 0);
     });
   });
 
@@ -1408,48 +1349,38 @@ function showPaymentMethodAnalysis() {
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
       </div>
       <div class="modal-content">
-        ${Object.entries(methods)
-          .sort((a, b) => b[1] - a[1])
-          .map(([method, total]) => `
-            <div style="margin-bottom: 10px; padding: 10px; background: var(--soft); border-radius: var(--radius);">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span>${escapeHtml(method)}</span>
-                <b>£${total.toFixed(2)}</b>
-              </div>
+        ${Object.entries(methods).sort((a,b)=>b[1]-a[1]).map(([m,total]) => `
+          <div style="margin-bottom:10px;padding:10px;background:var(--soft);border-radius:var(--radius);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>${escapeHtml(m)}</span><b>£${total.toFixed(2)}</b>
             </div>
-          `).join('')}
+          </div>
+        `).join("")}
       </div>
       <div class="modal-footer">
         <button onclick="this.closest('.modal-overlay').remove()">Close</button>
       </div>
     </div>
   `;
-
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
   overlay.innerHTML = modalHTML;
   document.body.appendChild(overlay);
 }
 
 function showDebtOverview() {
-  if (monthsData.length === 0) {
-    showNotification('No data available for reports', 'error');
-    return;
-  }
+  if (monthsData.length === 0) { showNotification("No data available for reports", "error"); return; }
 
-  let totalDebt = 0, totalOverdraft = 0, totalBNPL = 0, totalFinance = 0;
-
-  monthsData.forEach(month => {
-    (month.overdraftEntries || []).forEach(entry => {
-      const amount = n(entry.amount);
-      switch (entry.type) {
-        case 'Overdraft': totalOverdraft += amount; break;
-        case 'BNPL': totalBNPL += amount; break;
-        case 'Finance Plan': totalFinance += amount; break;
-        case 'Debt': totalDebt += amount; break;
-      }
+  let totals = { Debt:0, Overdraft:0, BNPL:0, "Finance Plan":0 };
+  monthsData.forEach(m => {
+    (m.overdraftEntries || []).forEach(e => {
+      const t = e.type || "";
+      const amt = parseFloat(e.amount || 0) || 0;
+      if (totals[t] != null) totals[t] += amt;
     });
   });
+
+  const grand = Object.values(totals).reduce((s,v)=>s+v,0);
 
   const modalHTML = `
     <div class="modal">
@@ -1459,60 +1390,43 @@ function showDebtOverview() {
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
       </div>
       <div class="modal-content">
-        <div style="margin-bottom: 15px; padding: 15px; background: var(--soft); border-radius: var(--radius);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span>Total Debt</span>
-            <b style="color: var(--danger)">£${totalDebt.toFixed(2)}</b>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span>Total Overdraft</span>
-            <b style="color: var(--warning)">£${totalOverdraft.toFixed(2)}</b>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span>Total BNPL</span>
-            <b style="color: var(--warning)">£${totalBNPL.toFixed(2)}</b>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span>Total Finance Plans</span>
-            <b style="color: var(--warning)">£${totalFinance.toFixed(2)}</b>
-          </div>
+        <div style="margin-bottom:15px;padding:15px;background:var(--soft);border-radius:var(--radius);">
+          ${Object.entries(totals).map(([k,v])=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span>${escapeHtml(k)}</span>
+              <b style="color:${k==="Debt" ? "var(--danger)" : "var(--warning)"}">£${v.toFixed(2)}</b>
+            </div>
+          `).join("")}
         </div>
-        <div class="help-text" style="text-align: center;">
-          Total Outstanding: £${(totalDebt + totalOverdraft + totalBNPL + totalFinance).toFixed(2)}
-        </div>
+        <div class="help-text" style="text-align:center;">Total Outstanding: £${grand.toFixed(2)}</div>
       </div>
       <div class="modal-footer">
         <button onclick="this.closest('.modal-overlay').remove()">Close</button>
       </div>
     </div>
   `;
-
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
   overlay.innerHTML = modalHTML;
   document.body.appendChild(overlay);
 }
 
 function showYearlyTrends() {
-  if (monthsData.length === 0) {
-    showNotification('No data available for reports', 'error');
-    return;
-  }
+  if (monthsData.length === 0) { showNotification("No data available for reports", "error"); return; }
 
   const years = {};
-  monthsData.forEach(month => {
-    const yearMatch = (month.name || '').match(/\d{4}/);
-    if (!yearMatch) return;
-    const year = yearMatch[0];
-    if (!years[year]) years[year] = { core: 0, debt: 0, count: 0 };
+  monthsData.forEach(m => {
+    const match = (m.name || "").match(/\d{4}/);
+    if (!match) return;
+    const y = match[0];
+    if (!years[y]) years[y] = { core:0, debt:0, count:0 };
 
-    let coreTotal = 0, debtTotal = 0;
-    (month.coreBills || []).forEach(b => coreTotal += n(b.amount));
-    (month.overdraftEntries || []).forEach(e => debtTotal += n(e.amount));
+    const coreTotal = (m.coreBills || []).reduce((s,b)=>s+(parseFloat(b.amount||0)||0),0);
+    const debtTotal = (m.overdraftEntries || []).reduce((s,e)=>s+(parseFloat(e.amount||0)||0),0);
 
-    years[year].core += coreTotal;
-    years[year].debt += debtTotal;
-    years[year].count++;
+    years[y].core += coreTotal;
+    years[y].debt += debtTotal;
+    years[y].count++;
   });
 
   const modalHTML = `
@@ -1523,47 +1437,42 @@ function showYearlyTrends() {
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
       </div>
       <div class="modal-content">
-        ${Object.entries(years).map(([year, data]) => `
-          <div style="margin-bottom: 15px; padding: 15px; background: var(--soft); border-radius: var(--radius);">
-            <h4 style="margin: 0 0 10px 0;">${escapeHtml(year)} (${data.count} months)</h4>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span>Average Core Bills:</span>
-              <b>£${(data.core / data.count).toFixed(2)}/month</b>
+        ${Object.entries(years).map(([y,d])=>`
+          <div style="margin-bottom:15px;padding:15px;background:var(--soft);border-radius:var(--radius);">
+            <h4 style="margin:0 0 10px 0;">${y} (${d.count} months)</h4>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span>Average Core Bills:</span><b>£${(d.core/d.count).toFixed(2)}/month</b>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Average Debt/Overdraft:</span>
-              <b>£${(data.debt / data.count).toFixed(2)}/month</b>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>Average Debt/Overdraft:</span><b>£${(d.debt/d.count).toFixed(2)}/month</b>
             </div>
           </div>
-        `).join('')}
+        `).join("")}
       </div>
       <div class="modal-footer">
         <button onclick="this.closest('.modal-overlay').remove()">Close</button>
       </div>
     </div>
   `;
-
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
   overlay.innerHTML = modalHTML;
   document.body.appendChild(overlay);
 }
 
-/* =========================
-   DARK MODE
-   ========================= */
+/* =========================================================
+   Dark Mode
+========================================================= */
 function toggleDarkMode() {
-  document.body.classList.toggle('dark');
-  const button = document.querySelector('.dark-toggle');
-  button.textContent = document.body.classList.contains('dark') ? '☀️ Light' : '🌙 Dark';
-  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  document.querySelector(".dark-toggle").textContent = isDark ? "☀️ Light" : "🌙 Dark";
+  localStorage.setItem(STORAGE.dark, String(isDark));
 }
 
-/* =========================
-   BACKUP / RESTORE (FIXED)
-   - includes salary, months, ALL lists, dark mode
-   - validates structure
-   ========================= */
+/* =========================================================
+   Backup & Restore (FIXED + backwards compatible)
+========================================================= */
 function showBackupManager() {
   const modalHTML = `
     <div class="modal">
@@ -1573,20 +1482,20 @@ function showBackupManager() {
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
       </div>
       <div class="modal-content">
-        <p style="margin-top: 0; opacity: 0.7; font-size: 14px;">Backup your data or restore from a backup file</p>
+        <p style="margin-top:0;opacity:.7;font-size:14px;">Backup your data or restore from a backup file</p>
 
         <div style="margin-bottom: 20px;">
-          <h4 style="margin: 0 0 10px 0;">Backup Data</h4>
-          <p style="margin: 0 0 10px 0; opacity: 0.7; font-size: 13px;">Download a backup of all your financial data</p>
-          <button class="success" onclick="downloadBackup()" style="width: 100%;">📥 Download Backup</button>
+          <h4 style="margin:0 0 10px 0;">Backup Data</h4>
+          <p style="margin:0 0 10px 0;opacity:.7;font-size:13px;">Download a backup of all your financial data</p>
+          <button class="success" onclick="downloadBackup()" style="width:100%;">📥 Download Backup</button>
         </div>
 
         <div>
-          <h4 style="margin: 0 0 10px 0;">Restore Data</h4>
-          <p style="margin: 0 0 10px 0; opacity: 0.7; font-size: 13px;">Upload a backup file to restore your data</p>
-          <input type="file" id="restore-file" accept=".json" style="margin-bottom: 10px; padding: 8px;">
-          <button class="secondary" onclick="restoreBackup()" style="width: 100%;">📤 Restore from Backup</button>
-          <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.6; color: var(--danger);">Warning: This will replace all current data!</p>
+          <h4 style="margin:0 0 10px 0;">Restore Data</h4>
+          <p style="margin:0 0 10px 0;opacity:.7;font-size:13px;">Upload a backup file to restore your data</p>
+          <input type="file" id="restore-file" accept=".json,application/json" style="margin-bottom:10px;padding:8px;">
+          <button class="secondary" onclick="restoreBackup()" style="width:100%;">📤 Restore from Backup</button>
+          <p style="margin:10px 0 0 0;font-size:12px;opacity:.6;color:var(--danger);">Warning: This will replace all current data!</p>
         </div>
       </div>
       <div class="modal-footer">
@@ -1594,189 +1503,149 @@ function showBackupManager() {
       </div>
     </div>
   `;
-
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
   overlay.innerHTML = modalHTML;
   document.body.appendChild(overlay);
 }
 
+function safeParseJSON(text) {
+  const cleaned = String(text || "").replace(/^\uFEFF/, "").trim(); // strip BOM
+  return JSON.parse(cleaned);
+}
+
+function normalizeBackup(raw) {
+  let b = raw;
+
+  // allow wrappers
+  if (b && typeof b === "object") {
+    if (b.data && typeof b.data === "object") b = b.data;
+    if (b.backup && typeof b.backup === "object") b = b.backup;
+  }
+
+  const months =
+    (b && Array.isArray(b.months) && b.months) ||
+    (raw?.data && Array.isArray(raw.data.months) && raw.data.months) ||
+    (raw?.backup && Array.isArray(raw.backup.months) && raw.backup.months) ||
+    null;
+
+  if (!months) throw new Error("Invalid backup: months array not found");
+
+  const salary = (b && b.salary != null) ? b.salary : "0";
+
+  // new v2 backups
+  const lists = (b && b.lists && typeof b.lists === "object") ? b.lists : null;
+
+  // old backups: paymentMethods
+  const paymentMethods = (b && Array.isArray(b.paymentMethods)) ? b.paymentMethods : null;
+
+  const darkMode = (b && typeof b.darkMode === "boolean") ? b.darkMode : null;
+
+  return { salary, months, lists, paymentMethods, darkMode };
+}
+
 function downloadBackup() {
-  // ensure latest month DOM is saved
-  saveAll();
+  try { saveAll(); } catch {}
 
   const backup = {
     version: 2,
     exported: new Date().toISOString(),
-    salary: document.getElementById('salary').value || '0',
+    salary: document.getElementById("salary").value || "0",
     months: monthsData,
     lists: {
-      methods: window.lists[LIST_KEYS.methods],
-      coreTypes: window.lists[LIST_KEYS.coreTypes],
-      debtTypes: window.lists[LIST_KEYS.debtTypes]
+      methods: window.lists[LIST_KEYS.methods] || [],
+      coreTypes: window.lists[LIST_KEYS.coreTypes] || [],
+      debtTypes: window.lists[LIST_KEYS.debtTypes] || []
     },
-    darkMode: document.body.classList.contains('dark')
+    darkMode: document.body.classList.contains("dark")
   };
 
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
-  a.download = `financial-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.download = `financial-tracker-backup-${new Date().toISOString().split("T")[0]}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  showNotification('Backup downloaded successfully', 'success');
-  document.querySelector('.modal-overlay')?.remove();
+  showNotification("Backup downloaded successfully", "success");
+  document.querySelector(".modal-overlay")?.remove();
 }
 
 function restoreBackup() {
-  const fileInput = document.getElementById('restore-file');
-  const file = fileInput.files[0];
+  const fileInput = document.getElementById("restore-file");
+  const file = fileInput?.files?.[0];
 
   if (!file) {
-    showNotification('Please select a backup file', 'error');
+    showNotification("Please select a backup file", "error");
     return;
   }
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+
+  reader.onload = (e) => {
     try {
-      const backup = JSON.parse(e.target.result);
+      const raw = safeParseJSON(e.target.result);
+      const normalized = normalizeBackup(raw);
 
-      // Basic validation
-      if (!backup || !Array.isArray(backup.months)) {
-        throw new Error('Invalid backup: missing months array');
+      if (!confirm("Restore backup? This will replace all current data.")) return;
+
+      // salary
+      document.getElementById("salary").value = normalized.salary ?? "0";
+
+      // lists
+      if (normalized.lists) {
+        if (Array.isArray(normalized.lists.methods) && normalized.lists.methods.length) window.lists[LIST_KEYS.methods] = normalized.lists.methods;
+        if (Array.isArray(normalized.lists.coreTypes) && normalized.lists.coreTypes.length) window.lists[LIST_KEYS.coreTypes] = normalized.lists.coreTypes;
+        if (Array.isArray(normalized.lists.debtTypes) && normalized.lists.debtTypes.length) window.lists[LIST_KEYS.debtTypes] = normalized.lists.debtTypes;
       }
-
-      if (!confirm('Restore backup? This will replace all current data.')) return;
-
-      // Restore salary
-      document.getElementById('salary').value = backup.salary ?? '0';
-
-      // Restore lists (new + backwards compatible)
-      if (backup.lists) {
-        if (Array.isArray(backup.lists.methods) && backup.lists.methods.length) window.lists[LIST_KEYS.methods] = backup.lists.methods;
-        if (Array.isArray(backup.lists.coreTypes) && backup.lists.coreTypes.length) window.lists[LIST_KEYS.coreTypes] = backup.lists.coreTypes;
-        if (Array.isArray(backup.lists.debtTypes) && backup.lists.debtTypes.length) window.lists[LIST_KEYS.debtTypes] = backup.lists.debtTypes;
-      } else if (Array.isArray(backup.paymentMethods) && backup.paymentMethods.length) {
-        // old backups
-        window.lists[LIST_KEYS.methods] = backup.paymentMethods;
+      // old backups
+      if (normalized.paymentMethods && normalized.paymentMethods.length) {
+        window.lists[LIST_KEYS.methods] = normalized.paymentMethods;
       }
-
       saveLists();
 
-      // Restore months
-      monthsData = backup.months.map(m => ({
-        id: m.id || ('month-' + Date.now()),
-        name: m.name || 'New Month',
-        coreBills: Array.isArray(m.coreBills) ? m.coreBills : [],
-        overdraftEntries: Array.isArray(m.overdraftEntries) ? m.overdraftEntries : []
+      // months normalized
+      monthsData = normalized.months.map(m => ({
+        id: m.id || uid("month"),
+        name: m.name || "New Month",
+        coreBills: Array.isArray(m.coreBills) ? m.coreBills.map(ensureRowId) : [],
+        overdraftEntries: Array.isArray(m.overdraftEntries) ? m.overdraftEntries.map(ensureRowId) : []
       }));
+
       currentMonthIndex = 0;
 
-      // Restore dark mode
-      const wantDark = !!backup.darkMode;
-      document.body.classList.toggle('dark', wantDark);
-      document.querySelector('.dark-toggle').textContent = wantDark ? '☀️ Light' : '🌙 Dark';
-      localStorage.setItem('darkMode', String(wantDark));
+      // dark mode
+      if (typeof normalized.darkMode === "boolean") {
+        document.body.classList.toggle("dark", normalized.darkMode);
+        document.querySelector(".dark-toggle").textContent = normalized.darkMode ? "☀️ Light" : "🌙 Dark";
+        localStorage.setItem(STORAGE.dark, String(normalized.darkMode));
+      }
 
       renderCurrentMonth();
       saveAll();
 
-      showNotification('Backup restored successfully', 'success');
-      document.querySelector('.modal-overlay')?.remove();
-    } catch (error) {
-      console.error('Error restoring backup:', error);
-      showNotification('Error restoring backup. Invalid file format.', 'error');
+      showNotification("Backup restored successfully", "success");
+      document.querySelector(".modal-overlay")?.remove();
+    } catch (err) {
+      console.error("restoreBackup error:", err);
+      showNotification("Error restoring backup. Invalid file format.", "error");
     }
   };
+
+  reader.onerror = () => showNotification("Could not read the file. Try again.", "error");
   reader.readAsText(file);
 }
 
-/* =========================
-   CSV EXPORT (unchanged)
-   ========================= */
-function exportMonthCSV(index) {
-  const month = monthsData[index];
-  if (!month) return;
-
-  let csv = [];
-
-  csv.push('Core Bills');
-  csv.push('Date,Payment Method,Company,Amount,Payment Type,Paid Status');
-  (month.coreBills || []).forEach(bill => {
-    csv.push([
-      bill.date, bill.method, bill.company, bill.amount, bill.type, bill.paid
-    ].map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(','));
-  });
-
-  csv.push('', '');
-
-  csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
-  csv.push('Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status');
-  (month.overdraftEntries || []).forEach(entry => {
-    csv.push([
-      entry.date, entry.method, entry.company, entry.amount, entry.type,
-      entry.currentBalance, entry.outstandingBalance, entry.limit, entry.paid
-    ].map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(','));
-  });
-
-  downloadCSV(csv.join('\n'), `${(month.name || 'Month').replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
-  showNotification('CSV exported successfully', 'success');
-}
-
-function exportAllCSV() {
-  if (monthsData.length === 0) {
-    showNotification('No data to export', 'error');
-    return;
-  }
-
-  let csv = ['Financial Tracker - All Data'];
-  csv.push(`Generated: ${new Date().toLocaleString()}`);
-  csv.push(`Salary: £${document.getElementById('salary').value || '0'}`);
-  csv.push('');
-
-  monthsData.forEach(month => {
-    csv.push(`Month: ${month.name}`);
-    csv.push('='.repeat(50));
-
-    if ((month.coreBills || []).length > 0) {
-      csv.push('Core Bills');
-      csv.push('Date,Payment Method,Company,Amount,Payment Type,Paid Status');
-      month.coreBills.forEach(bill => {
-        csv.push([
-          bill.date, bill.method, bill.company, bill.amount, bill.type, bill.paid
-        ].map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(','));
-      });
-      csv.push('');
-    }
-
-    if ((month.overdraftEntries || []).length > 0) {
-      csv.push('Overdraft, BNPL, Finance Plan, Debt Tracking');
-      csv.push('Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status');
-      month.overdraftEntries.forEach(entry => {
-        csv.push([
-          entry.date, entry.method, entry.company, entry.amount, entry.type,
-          entry.currentBalance, entry.outstandingBalance, entry.limit, entry.paid
-        ].map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(','));
-      });
-    }
-
-    csv.push('\n\n');
-  });
-
-  downloadCSV(csv.join('\n'), `financial_tracker_all_data_${new Date().toISOString().split('T')[0]}.csv`);
-  showNotification('All data exported to CSV', 'success');
-}
-
+/* =========================================================
+   CSV Export
+========================================================= */
 function downloadCSV(data, filename) {
-  const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
@@ -1785,171 +1654,203 @@ function downloadCSV(data, filename) {
   URL.revokeObjectURL(url);
 }
 
-/* =========================
-   PDF EXPORT (FIXED)
-   - safe parsing
-   - includes Payment Method columns
-   ========================= */
+function exportMonthCSV(index) {
+  saveAll();
+  const month = monthsData[index];
+  if (!month) return;
+
+  let csv = [];
+  csv.push("Core Bills");
+  csv.push("Date,Payment Method,Company,Amount,Payment Type,Paid Status");
+  (month.coreBills || []).forEach(b => {
+    csv.push([b.date,b.method,b.company,b.amount,b.type,b.paid].map(c => `"${String(c ?? "").replaceAll('"','""')}"`).join(","));
+  });
+
+  csv.push("", "");
+  csv.push("Overdraft, BNPL, Finance Plan, Debt Tracking");
+  csv.push("Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status");
+  (month.overdraftEntries || []).forEach(e => {
+    csv.push([e.date,e.method,e.company,e.amount,e.type,e.currentBalance,e.outstandingBalance,e.limit,e.paid].map(c => `"${String(c ?? "").replaceAll('"','""')}"`).join(","));
+  });
+
+  downloadCSV(csv.join("\n"), `${(month.name || "month").replace(/[^a-z0-9]/gi,"_")}_${new Date().toISOString().split("T")[0]}.csv`);
+  showNotification("CSV exported successfully", "success");
+}
+
+function exportAllCSV() {
+  saveAll();
+  if (monthsData.length === 0) { showNotification("No data to export", "error"); return; }
+
+  let csv = [];
+  csv.push("Financial Tracker - All Data");
+  csv.push(`Generated: ${new Date().toLocaleString()}`);
+  csv.push(`Salary: £${document.getElementById("salary").value || "0"}`);
+  csv.push("");
+
+  monthsData.forEach(month => {
+    csv.push(`Month: ${month.name || "Month"}`);
+    csv.push("==================================================");
+
+    if ((month.coreBills || []).length) {
+      csv.push("Core Bills");
+      csv.push("Date,Payment Method,Company,Amount,Payment Type,Paid Status");
+      month.coreBills.forEach(b => {
+        csv.push([b.date,b.method,b.company,b.amount,b.type,b.paid].map(c => `"${String(c ?? "").replaceAll('"','""')}"`).join(","));
+      });
+      csv.push("");
+    }
+
+    if ((month.overdraftEntries || []).length) {
+      csv.push("Overdraft, BNPL, Finance Plan, Debt Tracking");
+      csv.push("Date,Payment Method,Bank/Company,Amount,Payment Type,Current Balance,Outstanding Balance,Limit,Paid Status");
+      month.overdraftEntries.forEach(e => {
+        csv.push([e.date,e.method,e.company,e.amount,e.type,e.currentBalance,e.outstandingBalance,e.limit,e.paid].map(c => `"${String(c ?? "").replaceAll('"','""')}"`).join(","));
+      });
+    }
+    csv.push("\n\n");
+  });
+
+  downloadCSV(csv.join("\n"), `financial_tracker_all_data_${new Date().toISOString().split("T")[0]}.csv`);
+  showNotification("All data exported to CSV", "success");
+}
+
+/* =========================================================
+   PDF Export (FIXED + uses latest DOM + includes Method)
+========================================================= */
 function exportPDF() {
-  // save latest DOM first
   saveAll();
 
   if (monthsData.length === 0) {
-    showNotification('No data to export', 'error');
+    showNotification("No data to export", "error");
     return;
   }
 
-  if (!window.jspdf || !window.jspdf.jsPDF) {
-    showNotification('PDF library failed to load. Check your internet/CDN.', 'error');
+  if (!window.jspdf?.jsPDF) {
+    showNotification("PDF library not loaded. Check your jsPDF script links.", "error");
     return;
   }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const doc = new window.jspdf.jsPDF({ unit: "pt", format: "a4" });
 
-  doc.setFontSize(20);
-  doc.setTextColor(37, 99, 235);
-  doc.text('Financial Tracker Report', 20, 20);
+  // Title
+  doc.setFontSize(18);
+  doc.text("Financial Tracker Report", 40, 50);
 
-  doc.setFontSize(11);
-  doc.setTextColor(100);
-  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 30);
-  doc.text(`Monthly Salary: £${n(document.getElementById('salary').value).toFixed(2)}`, 20, 36);
+  doc.setFontSize(10);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 40, 70);
+  doc.text(`Monthly Salary: £${(parseFloat(document.getElementById("salary").value || "0") || 0).toFixed(2)}`, 40, 85);
 
-  let yPos = 45;
+  monthsData.forEach((month, idx) => {
+    if (idx > 0) doc.addPage();
 
-  monthsData.forEach((month, index) => {
-    if (index > 0) {
-      doc.addPage();
-      yPos = 20;
-    }
+    let y = 60;
+    doc.setFontSize(14);
+    doc.text(String(month.name || "Month"), 40, y);
+    y += 18;
 
-    doc.setFontSize(16);
-    doc.setTextColor(0);
-    doc.text(String(month.name || 'Month'), 20, yPos);
-    yPos += 10;
-
-    // Core Bills
-    const coreRows = [];
-    (month.coreBills || []).forEach(bill => {
-      const hasAny = (bill.date || bill.company || n(bill.amount) !== 0 || bill.type || bill.method);
-      if (!hasAny) return;
-      coreRows.push([
-        bill.date || '',
-        bill.method || '',
-        bill.company || '',
-        `£${n(bill.amount).toFixed(2)}`,
-        bill.type || '',
-        bill.paid === 'paid' ? '✓' : '✗'
+    const coreRows = (month.coreBills || [])
+      .filter(b => b.date || b.company || (parseFloat(b.amount || 0) || 0) !== 0 || b.type || b.method)
+      .map(b => [
+        b.date || "",
+        b.method || "",
+        b.company || "",
+        `£${(parseFloat(b.amount || 0) || 0).toFixed(2)}`,
+        b.type || "",
+        (b.paid === "paid") ? "✓" : "✗"
       ]);
-    });
 
-    if (coreRows.length > 0) {
-      doc.setFontSize(12);
-      doc.setTextColor(50, 50, 50);
-      doc.text('Core Bills', 20, yPos);
-      yPos += 8;
+    if (coreRows.length) {
+      doc.setFontSize(11);
+      doc.text("Core Bills", 40, y);
+      y += 10;
 
       doc.autoTable({
-        head: [['Date', 'Method', 'Company', 'Amount', 'Type', 'Paid']],
+        startY: y,
+        head: [["Date","Method","Company","Amount","Type","Paid"]],
         body: coreRows,
-        startY: yPos,
-        theme: 'grid',
-        headStyles: { fillColor: [37, 99, 235] },
-        margin: { left: 20, right: 20 },
-        styles: { fontSize: 9 }
+        theme: "grid",
+        margin: { left: 40, right: 40 },
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [37, 99, 235] }
       });
-      yPos = doc.lastAutoTable.finalY + 12;
+
+      y = doc.lastAutoTable.finalY + 18;
     }
 
-    // Overdraft / Debt
-    const debtRows = [];
-    (month.overdraftEntries || []).forEach(entry => {
-      const hasAny = (entry.date || entry.company || n(entry.amount) !== 0 || entry.type || entry.method ||
-                      entry.currentBalance || entry.outstandingBalance || entry.limit);
-      if (!hasAny) return;
-
-      debtRows.push([
-        entry.date || '',
-        entry.method || '',
-        entry.company || '',
-        `£${n(entry.amount).toFixed(2)}`,
-        entry.type || '',
-        entry.currentBalance ? `£${n(entry.currentBalance).toFixed(2)}` : '',
-        entry.outstandingBalance ? `£${n(entry.outstandingBalance).toFixed(2)}` : '',
-        entry.limit ? `£${n(entry.limit).toFixed(2)}` : '',
-        entry.paid === 'paid' ? '✓' : '✗'
+    const debtRows = (month.overdraftEntries || [])
+      .filter(e => e.date || e.company || (parseFloat(e.amount || 0) || 0) !== 0 || e.type || e.currentBalance || e.outstandingBalance || e.limit || e.method)
+      .map(e => [
+        e.date || "",
+        e.method || "",
+        e.company || "",
+        `£${(parseFloat(e.amount || 0) || 0).toFixed(2)}`,
+        e.type || "",
+        e.currentBalance ? `£${(parseFloat(e.currentBalance || 0) || 0).toFixed(2)}` : "",
+        e.outstandingBalance ? `£${(parseFloat(e.outstandingBalance || 0) || 0).toFixed(2)}` : "",
+        e.limit ? `£${(parseFloat(e.limit || 0) || 0).toFixed(2)}` : "",
+        (e.paid === "paid") ? "✓" : "✗"
       ]);
-    });
 
-    if (debtRows.length > 0) {
-      doc.setFontSize(12);
-      doc.setTextColor(50, 50, 50);
-      doc.text('Overdraft / BNPL / Finance Plan / Debt', 20, yPos);
-      yPos += 8;
+    if (debtRows.length) {
+      doc.setFontSize(11);
+      doc.text("Overdraft / BNPL / Finance Plan / Debt", 40, y);
+      y += 10;
 
       doc.autoTable({
-        head: [['Date', 'Method', 'Company', 'Amount', 'Type', 'Current', 'Outstanding', 'Limit', 'Paid']],
+        startY: y,
+        head: [["Date","Method","Company","Amount","Type","Current","Outstanding","Limit","Paid"]],
         body: debtRows,
-        startY: yPos,
-        theme: 'grid',
-        headStyles: { fillColor: [37, 99, 235] },
-        margin: { left: 20, right: 20 },
-        styles: { fontSize: 8 }
+        theme: "grid",
+        margin: { left: 40, right: 40 },
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [37, 99, 235] }
       });
-      yPos = doc.lastAutoTable.finalY + 12;
+
+      y = doc.lastAutoTable.finalY + 18;
     }
 
-    const coreTotal = (month.coreBills || []).reduce((sum, b) => sum + n(b.amount), 0);
-    const debtTotal = (month.overdraftEntries || []).reduce((sum, e) => sum + n(e.amount), 0);
-    const salary = n(document.getElementById('salary').value);
+    const coreTotal = (month.coreBills || []).reduce((s,b)=>s+(parseFloat(b.amount||0)||0),0);
+    const debtTotal = (month.overdraftEntries || []).reduce((s,e)=>s+(parseFloat(e.amount||0)||0),0);
+    const salary = (parseFloat(document.getElementById("salary").value || "0") || 0);
     const remaining = salary - coreTotal - debtTotal;
 
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text('Summary:', 20, yPos);
-    yPos += 7;
+    doc.setFontSize(11);
+    doc.text("Summary", 40, y);
+    y += 14;
     doc.setFontSize(10);
-    doc.text(`Total Core Bills: £${coreTotal.toFixed(2)}`, 25, yPos); yPos += 5;
-    doc.text(`Total Overdraft/Debt: £${debtTotal.toFixed(2)}`, 25, yPos); yPos += 5;
-    doc.text(`Remaining Salary: £${remaining.toFixed(2)}`, 25, yPos); yPos += 10;
+    doc.text(`Total Core Bills: £${coreTotal.toFixed(2)}`, 55, y); y += 12;
+    doc.text(`Total Overdraft/Debt: £${debtTotal.toFixed(2)}`, 55, y); y += 12;
+    doc.text(`Remaining Salary: £${remaining.toFixed(2)}`, 55, y);
   });
 
-  doc.save(`financial_tracker_report_${new Date().toISOString().split('T')[0]}.pdf`);
-  showNotification('PDF exported successfully', 'success');
+  doc.save(`financial_tracker_report_${new Date().toISOString().split("T")[0]}.pdf`);
+  showNotification("PDF exported successfully", "success");
 }
 
-/* =========================
-   AUTO-SAVE + UNLOAD SAVE
-   ========================= */
-setInterval(() => {
-  // avoid saving if no months (keeps storage clean)
-  if (monthsData.length > 0) saveAll();
-}, 30000);
+/* =========================================================
+   Autosave + Keyboard
+========================================================= */
+setInterval(() => { try { saveAll(); } catch {} }, 30000);
+window.addEventListener("beforeunload", () => { try { saveAll(); } catch {} });
 
-window.addEventListener('beforeunload', () => {
-  try { saveAll(); } catch {}
-});
-
-/* =========================
-   KEYBOARD SHORTCUTS
-   ========================= */
-document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
     e.preventDefault();
     saveAll();
-    showNotification('Data saved', 'success');
+    showNotification("Data saved", "success");
   }
-  if (e.key === 'Escape') {
+  if (e.key === "Escape") {
     closeListManager();
-    document.querySelector('.modal-overlay')?.remove();
+    document.querySelector(".modal-overlay")?.remove();
   }
-  if (e.key === 'ArrowLeft') prevMonth();
-  else if (e.key === 'ArrowRight') nextMonth();
+  if (e.key === "ArrowLeft") prevMonth();
+  if (e.key === "ArrowRight") nextMonth();
 });
 
-// DOM ready
-document.addEventListener('DOMContentLoaded', initApp);
+/* =========================================================
+   DOM Ready
+========================================================= */
+document.addEventListener("DOMContentLoaded", initApp);
 </script>
 </body>
 </html>
