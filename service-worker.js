@@ -1,47 +1,63 @@
-const CACHE_NAME = "fin-tracker-v1";
-const ASSETS = [
+const CACHE_NAME = "northstar-ledger-v1";
+const APP_ASSETS = [
   "./",
-  "index.html",
-  "manifest.json",
-  "service-worker.js",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
-  "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./manifest.json",
+  "./service-worker.js",
+  "./assets/icon.svg",
+  "./assets/icon-maskable.svg"
 ];
 
-self.addEventListener("install", event => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_ASSETS))
   );
+  self.skipWaiting();
 });
 
-self.addEventListener("activate", event => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
+    caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
       )
-    ).then(() => self.clients.claim())
+    )
   );
+  self.clients.claim();
 });
 
-self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") {
+    return;
+  }
+
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) {
+    return;
+  }
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
+    caches.match(event.request).then((cached) => {
+      if (cached) {
+        return cached;
+      }
 
-      return fetch(event.request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-          return response;
-        })
-        .catch(() => caches.match("index.html"));
+      return fetch(event.request).then((response) => {
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+        return response;
+      });
     })
   );
 });
