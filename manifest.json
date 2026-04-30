@@ -1,11 +1,11 @@
 {
-  "name": "Northstar Ledger",
-  "short_name": "Ledger",
-  "description": "An offline-ready personal finance dashboard for tracking cashflow and budget health.",
+  "name": "Financial Tracker",
+  "short_name": "FinTracker",
+  "description": "A month-by-month personal finance tracker for bills, overdrafts, BNPL, finance plans, and debt.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f5efe2",
-  "theme_color": "#18392b",
+  "background_color": "#f4f7fb",
+  "theme_color": "#2563eb",
   "icons": [
     {
       "src": "assets/icon.svg",

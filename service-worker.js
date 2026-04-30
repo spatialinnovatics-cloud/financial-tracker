@@ -1,4 +1,4 @@
-const CACHE_NAME = "northstar-ledger-v1";
+const CACHE_NAME = "fin-tracker-v2";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -54,8 +54,8 @@ self.addEventListener("fetch", (event) => {
       }
 
       return fetch(event.request).then((response) => {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         return response;
       });
     })
